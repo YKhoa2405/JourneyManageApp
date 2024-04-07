@@ -1,0 +1,104 @@
+import { StyleSheet } from "react-native"
+import { borderUnder, item, mainColor } from "../assets/color"
+
+const HomeStyle = StyleSheet.create({
+    container:{
+        flex:1,
+    },
+    header:{
+        marginTop:35,
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between',
+        marginHorizontal:20
+    },
+    nameTitle:{
+        fontSize:20,
+        fontWeight:'bold',
+        color:mainColor
+    },
+    iconHeader:{
+        alignItems:'center',
+        flexDirection:'row',
+        justifyContent:'flex-end',
+    },
+    content:{
+        marginTop:20,
+    },
+// ItemHome
+    text:{
+        opacity:0.5,
+        marginLeft:2
+    },
+    
+    containerItemHome:{
+        marginVertical:5,
+        borderTopWidth:1,
+        borderColor:borderUnder,
+        paddingVertical:10
+    },
+    titleItemHome:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'space-between',
+        paddingHorizontal:20,
+        marginVertical:5,
+    },
+    nameUser:{
+        padding:10,
+        fontWeight:'bold'
+    },
+    optionHomeItem:{
+        flexDirection:'row',
+        alignItems:'center',
+        paddingHorizontal:20,
+        justifyContent:'flex-start',
+        marginVertical:5,
+    },
+    imgUser:{
+        width:25,
+        height:25,
+        borderRadius:50
+    },
+    contentItem:{
+        flex:1,
+        flexDirection:'row',
+        backgroundColor:'white',
+        paddingVertical:10,
+        paddingHorizontal:20
+    },
+    contentJourney:{
+        flex:2,
+        paddingLeft:10
+    },
+    imgJourney:{
+        width:'100%',
+        height:'100%',
+        resizeMode:'cover',
+        flex:1,
+        borderRadius:20
+    },
+    nameJourney:{
+        fontSize:18,
+        fontWeight:'bold',
+        marginBottom:5
+    },
+    goStart:{
+        flexDirection:'row',
+        alignItems:'center',
+    },
+    line:{
+        borderWidth:1,
+        width: 1,
+        height:15,
+        marginLeft:14,
+        opacity:0.2
+    },
+    btnAddJourney:{
+        flexDirection:'row',
+        justifyContent:'space-between',
+        alignItems:'center'
+    }
+})
+
+export default HomeStyle
