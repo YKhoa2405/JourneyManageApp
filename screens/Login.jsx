@@ -7,6 +7,7 @@ import LoginStyle from "../styles/LoginStyle";
 import RegisterScreen from "./Register";
 import InputPass from "./components/InputPass";
 import NaviBottom from "./navigation/NaviBottom";
+import axios from 'axios';
 export default function LoginScreen(){
     const [username,setUsername] = useState('')
     const [password,setPassword] = useState('')
@@ -19,17 +20,35 @@ export default function LoginScreen(){
     }
     if(isRegister){return <RegisterScreen/>}
 
+    function goHome(){
+        setIsHome(true)
+    }
     // Xử lý đăng nhập
     if(isHome){return <NaviBottom/>}
-    function handleLogin(){
-        // Kiểm tra tên đăng nhập và mật khẩu
-        if (username === '1' && password === '1') {
-            setIsHome(true)    
-        } 
-        else {
-          Alert.alert('Error', 'Invalid username or password');
+
+    const handleLogin = async () => {
+        try {
+          const response = await axios.get('https://jsonplaceholder.typicode.com/users', {
+            params: {
+              username,
+              password
+            }
+          });
+    
+          if (response.data.some(user => user.username === username && user.email === password)) {
+            // Login successful
+            Alert.alert('Login successful');
+          } else {
+            // Username or password is incorrect
+            Alert.alert('Invalid username or password');
+          }
+        } catch (error) {
+          // Error occurred during login
+          console.error('Login error:', error);
+          Alert.alert('Error occurred during login');
         }
     };
+
 
     return(
         <View style={LoginStyle.container}>

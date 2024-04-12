@@ -10,6 +10,7 @@ import NotificationScreen from "../Notification";
 import MessengerScreen from "../Messenger";
 
 
+
 const Tab = createBottomTabNavigator();
 
 export default function NaviBottom() {
@@ -26,6 +27,9 @@ export default function NaviBottom() {
             else if (route.name === "Thêm hành trình") {
                 iconName = focused ? "add-circle-outline" : "add-circle-outline"
             }
+            else if (route.name === "Thông báo") {
+              iconName = focused ? "notifications-none" : "notifications-none"
+          }
             else if (route.name === "Trang cá nhân") {
                 return(
                   <Image source={require('../../assets/topImage.jpg')} style={{width:28, height:28, borderRadius:50, resizeMode:'cover'}}/>
@@ -38,6 +42,7 @@ export default function NaviBottom() {
       >
         <Tab.Screen name="Trang chủ" component={HomeScreen} options={{headerShown:false}}/>
         <Tab.Screen name="Thêm hành trình" component={NotificationScreen}/>
+        <Tab.Screen name="Thông báo" component={NotificationScreen}/>
         <Tab.Screen name="Trang cá nhân" component={ProfileScreen} options={{headerShown:false}} />
       </Tab.Navigator>
     </NavigationContainer>
