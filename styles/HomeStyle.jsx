@@ -2,102 +2,104 @@ import { StyleSheet } from "react-native"
 import { borderUnder, item, mainColor } from "../assets/color"
 
 const HomeStyle = StyleSheet.create({
-    container:{
-        flex:1,
+    container: {
+        flex: 1,
     },
-    header:{
-        marginTop:35,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-between',
-        marginHorizontal:20
+    header: {
+        backgroundColor: mainColor,
+        borderBottomLeftRadius: 10,
+        paddingBottom:20,
+        borderBottomRightRadius: 10
     },
-    nameTitle:{
-        fontSize:20,
-        fontWeight:'bold',
-        color:mainColor
+    headerTitle: {
+        marginTop: 20,
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 20,
     },
-    iconHeader:{
-        alignItems:'center',
-        flexDirection:'row',
-        justifyContent:'flex-end',
+    nameTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginLeft: 10
     },
-    content:{
-        marginTop:20,
+    iconHeader: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
     },
-// ItemHome
-    text:{
-        opacity:0.5,
-        marginLeft:2
+    content: {
+        marginTop: 20,
     },
-    
-    containerItemHome:{
-        marginVertical:5,
-        borderTopWidth:1,
-        borderColor:borderUnder,
-        paddingVertical:10
-    },
-    titleItemHome:{
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'space-between',
+    contentTitle:{
         paddingHorizontal:20,
-        marginVertical:5,
+
     },
-    nameUser:{
-        padding:10,
-        fontWeight:'bold'
+    // ItemHome
+    text: {
+        opacity: 0.5,
+        marginLeft: 2
     },
-    optionHomeItem:{
-        flexDirection:'row',
-        alignItems:'center',
-        paddingHorizontal:20,
-        justifyContent:'flex-start',
-        marginVertical:5,
+
+    containerItemHome: {
+        marginVertical: 5,
+        borderBottomWidth: 1,
+        borderColor: borderUnder,
+        paddingVertical: 10
     },
-    imgUser:{
-        width:25,
-        height:25,
-        borderRadius:50
+    titleItemHome: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        marginVertical: 5,
     },
-    contentItem:{
+    nameUser: {
+        padding: 10,
+        fontWeight: 'bold'
+    },
+    optionHomeItem: {
+        flexDirection: 'row',
+        paddingRight:10
+    },
+    cardJourney: {
+        flex: 1,
+        backgroundColor: 'white',
+        flexDirection:'column',
+        marginHorizontal:20,
+        borderRadius:10,
+        elevation:5
+    },
+    cardImage:{
         flex:1,
-        flexDirection:'row',
-        backgroundColor:'white',
-        paddingVertical:10,
-        paddingHorizontal:20
     },
-    contentJourney:{
-        flex:2,
-        paddingLeft:10
+    cardContent: {
+        flex: 1,
+        padding:10
     },
-    imgJourney:{
-        width:'100%',
-        height:'100%',
-        resizeMode:'cover',
-        flex:1,
-        borderRadius:20
+    nameJourney: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5
     },
-    nameJourney:{
-        fontSize:18,
-        fontWeight:'bold',
-        marginBottom:5
+    goStart: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    goStart:{
-        flexDirection:'row',
-        alignItems:'center',
-    },
-    line:{
-        borderWidth:1,
+    line: {
+        borderWidth: 1,
         width: 1,
-        height:15,
-        marginLeft:14,
-        opacity:0.2
+        height: 15,
+        marginLeft: 14,
+        opacity: 0.2
+    },
+    cardInfo: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
     btnAddJourney:{
-        flexDirection:'row',
-        justifyContent:'space-between',
-        alignItems:'center'
+        marginTop:20,
+        marginBottom:10
     }
 })
 

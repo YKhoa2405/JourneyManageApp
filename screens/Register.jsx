@@ -8,6 +8,7 @@ import InputPass from "./components/InputPass";
 import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 import MessageError from "./components/MessageError";
+import {Host,endpoints } from "../config/API";
 
 
 
@@ -60,8 +61,6 @@ export default function RegisterScreen() {
             return;
         }
 
-
-
         let formRegister = new FormData();
         formRegister.append('firstname', firstname);
         formRegister.append('lastname', lastname);
@@ -79,6 +78,7 @@ export default function RegisterScreen() {
         }
 
         setIsLoading(true)
+
         axios.post('https://hieuecourse.pythonanywhere.com/user/', formRegister, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -90,7 +90,7 @@ export default function RegisterScreen() {
                 goLogin()
             })
             .catch(function (error) {
-                console.log(error.response);
+                console.log(error.response);                                                                
                 setIsLoading(false)
 
             });
@@ -102,7 +102,7 @@ export default function RegisterScreen() {
     return (
 
         <View style={styles.container}>
-            <View>
+            <View style={{ display: isLoading || nullValue ? 'flex' : 'none' }}>
                 {isLoading && <ActivityIndicator color={'black'} size={"large"} />}
                 {nullValue && <MessageError message={'Vui lòng nhập đầy đủ thông tin!!'} />}
             </View>
@@ -152,11 +152,13 @@ export default function RegisterScreen() {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 70,
-        paddingHorizontal: 30
+        marginTop: 20,
+        paddingHorizontal: 30,
+        flex: 1
     },
     comtainerTitle: {
-        marginBottom: 10
+        marginBottom: 10,
+        marginTop:50
     },
     title: {
         fontSize: 25,

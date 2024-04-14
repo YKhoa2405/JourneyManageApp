@@ -16,10 +16,12 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginBottom: 10,
         width: '100%',
-        shadowColor: '#171717',
-        shadowOffset: { width: -2, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 3,
+        position: 'absolute',
+        top: 5,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        zIndex: 1,
         
     },
     text: {

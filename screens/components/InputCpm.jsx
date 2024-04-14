@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { mainColor } from "../../assets/color";
 
 export default function InputCpm({ placeholder, onChangeText, value }){
     return(
@@ -17,6 +18,7 @@ const styles = StyleSheet.create({
         borderColor:'grey',
         borderRadius:10,
         padding:10,
-        marginTop:15,
+        marginTop:10,
+        backgroundColor:'white'
     }
 })
