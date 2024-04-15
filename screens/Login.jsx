@@ -10,6 +10,7 @@ import NaviBottom from "./navigation/NaviBottom";
 import axios from 'axios';
 import MyContext from "../config/MyContext";
 import API, { endpoints } from "../config/API";
+import { ActivityIndicator } from "react-native-paper";
 export default function LoginScreen() {
 
 
@@ -19,6 +20,7 @@ export default function LoginScreen() {
 
     const [isRegister, setIsRegister] = useState(false)
     const [isHome, setIsHome] = useState(false)
+    const [loading, setLoading] = useState(false);
     // Chuyển đến trang login
     function goRegister() { setIsRegister(true) }
     if (isRegister) { return <RegisterScreen /> }
@@ -28,19 +30,42 @@ export default function LoginScreen() {
 
 
     // Xử lý đăng nhập
-    const handleLogin = async()=>{
+    const handleLogin = async () => {
+        setLoading(true)
         try {
-            const res = await axios.post('https://hieuecourse.pythonanywhere.com/o/token/', {
-                'username': username,
-                'password': password,
-                'client_id': "KVmbMpN6sjvf8joWQdWRCISHqiI8PcbIqw2ZRyXP",
-                'client_secret': "JJFWE3qFRLMdiBW91JRJNop139fBnEurmKKONHHJsTZigpEgqTyoClqtcE0MaMw1AacAroiSqxivUhux72Ac1xDzqaFe8UuXFPadoDJNHyCBx3gcKQlNJZTr5vnYAhGN",
-                'grant_type': "password"
-            });
-        
+            let header = {
+                'Content-Type': 'application/x-www-form-urlencoded' // Change Content-Type
+            };
+            let data = {
+                username: username,
+                password: password,
+                client_id: "KVmbMpN6sjvf8joWQdWRCISHqiI8PcbIqw2ZRyXP",
+                client_secret: "JJFWE3qFRLMdiBW91JRJNop139fBnEurmKKONHHJsTZigpEgqTyoClqtcE0MaMw1AacAroiSqxivUhux72Ac1xDzqaFe8UuXFPadoDJNHyCBx3gcKQlNJZTr5vnYAhGN",
+                grant_type: "password",
+            };
+            let res = await API.post(endpoints["login"], data, { headers: header });
             console.info(res.data);
-        } catch (error) {
-            console.error(error)
+
+            dispatch({
+                type: 'login',
+                payload: res.data
+            })
+        } catch (ex) {
+            if (ex.response) {
+                // Server trả về phản hồi có lỗi
+                console.error("Server error:", ex.response.data);
+                Alert.alert("Server error:", ex.response.data);
+            } else if (ex.request) {
+                // Không nhận được phản hồi từ server
+                console.error("No response received from server");
+                Alert.alert("No response received from server");
+            } else {
+                // Lỗi xảy ra khi thiết lập yêu cầu
+                console.error("Error setting up request:", ex.message);
+                Alert.alert("Error setting up request:", ex.message);
+            }
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -53,7 +78,7 @@ export default function LoginScreen() {
                 <Text style={LoginStyle.wellcome}>Vui lòng nhập thông tin của bạn.</Text>
             </View>
             <View>
-                <InputCpm placeholder={'Số điện thoại, tên người dùng'}
+                <InputCpm placeholder={'Tên tài khoản'}
                     onChangeText={text => setUsername(text)}
                     value={username}></InputCpm>
                 <InputPass placeholder={'Mật khẩu'}
@@ -67,7 +92,9 @@ export default function LoginScreen() {
                 </TouchableOpacity>
             </View>
             <View>
-                <ButtonMain title={'Đăng nhập'} onPress={handleLogin}></ButtonMain>
+                {loading ? (<ActivityIndicator color="black" size={'small'} />) : (
+                    <ButtonMain title={'Đăng nhập'} onPress={handleLogin}></ButtonMain>
+                )}
             </View>
             <View style={LoginStyle.lineContainer}>
                 <View style={LoginStyle.line}></View>

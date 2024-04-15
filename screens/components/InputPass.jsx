@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { mainColor } from "../../assets/color";
+import { mainColor, white } from "../../assets/color";
 
 export default function InputPass({ placeholder, onChangeText, value }){
     const [hidePassword, setHidePassword] = useState(true);
@@ -36,7 +36,8 @@ const styles = StyleSheet.create({
         borderColor:'grey',
         borderWidth:1,
         marginTop:15,
-        justifyContent:'space-between'
+        justifyContent:'space-between',
+        backgroundColor:white
     },
     inputPass:{
         width:'90%'

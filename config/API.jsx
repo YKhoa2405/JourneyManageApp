@@ -1,21 +1,21 @@
 import axios from "axios";
 
-const Host = 'https://hieuecourse.pythonanywhere.com'
+const HOST ="https://hieuecourse.pythonanywhere.com";
 
 export const  endpoints = {
     'user'  : '/user/',
-    'login' : '/o/token'
+    login: "/o/token/",
 }
 
 export function authApi(){
     return axios.create({
-        baseURL:Host,
+        baseURL:HOST,
         headers:{
-            'Authorization': `Bearer ...`
+            Authorization: `Bearer ${accessToken}`,
         }
     })
 }
 
 export default axios.create({
-    baseURL: Host
+    baseURL: HOST
 })

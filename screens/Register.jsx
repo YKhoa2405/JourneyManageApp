@@ -8,7 +8,7 @@ import InputPass from "./components/InputPass";
 import * as ImagePicker from 'expo-image-picker';
 import axios from "axios";
 import MessageError from "./components/MessageError";
-import {Host,endpoints } from "../config/API";
+import { Host, endpoints } from "../config/API";
 
 
 
@@ -90,7 +90,7 @@ export default function RegisterScreen() {
                 goLogin()
             })
             .catch(function (error) {
-                console.log(error.response);                                                                
+                console.log(error.response);
                 setIsLoading(false)
 
             });
@@ -103,7 +103,6 @@ export default function RegisterScreen() {
 
         <View style={styles.container}>
             <View style={{ display: isLoading || nullValue ? 'flex' : 'none' }}>
-                {isLoading && <ActivityIndicator color={'black'} size={"large"} />}
                 {nullValue && <MessageError message={'Vui lòng nhập đầy đủ thông tin!!'} />}
             </View>
             <View style={styles.comtainerTitle}>
@@ -127,7 +126,9 @@ export default function RegisterScreen() {
 
             </View>
             <View style={styles.buttonContainer}>
-                <ButtonMain title={'Đăng ký'} onPress={handeRegister}></ButtonMain>
+                {isLoading ? (<ActivityIndicator color={'black'} size={'large'}/>) : (
+                    <ButtonMain title={'Đăng ký'} onPress={handeRegister}></ButtonMain>
+                )}
             </View>
             <View style={styles.lineContainer}>
                 <View style={styles.line}></View>
@@ -158,7 +159,7 @@ const styles = StyleSheet.create({
     },
     comtainerTitle: {
         marginBottom: 10,
-        marginTop:50
+        marginTop: 50
     },
     title: {
         fontSize: 25,
