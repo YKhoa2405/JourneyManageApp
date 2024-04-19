@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, ActivityIndicator } from "react-native";
-import { borderUnder, mainColor } from "../assets/color";
-import ButtonMain from "./components/ButtonMain";
-import InputCpm from "./components/InputCpm";
-import LoginScreen from "./Login";
-import InputPass from "./components/InputPass";
+import { borderUnder, mainColor } from "../../assets/color";
+import ButtonMain from "../components/ButtonMain";
+import InputCpm from "../components/InputCpm";
+import InputPass from "../components/InputPass";
 import * as ImagePicker from 'expo-image-picker';
-import axios from "axios";
-import MessageError from "./components/MessageError";
-import { Host, endpoints } from "../config/API";
+import MessageError from "../components/MessageError";
+import API, { Host, endpoints } from "../../config/API";
+import LoginScreen from "./Login";
 
 
 
@@ -17,26 +16,26 @@ export default function RegisterScreen() {
     const [nullValue, setNullValue] = useState(false) //Kiểm tra thông tin có Đầy đủ thông tin
     const [isLoading, setIsLoading] = useState(false)
     // Biến lưu giá trị đăng ký
-    const [firstname, setFirstName] = useState('')
-    const [lastname, setLastName] = useState('')
+    const [first_name, setFirstName] = useState('')
+    const [last_name, setLastName] = useState('')
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
     const [avatar, setAvatar] = useState(null)
 
     // chuyển trang login
-    function goLogin() {
+    const goLogin = () => {
         setIsLogin(true)
     }
     if (isLogin) {
         return <LoginScreen />
     }
     // Hiển thị thông báo
-    function showMessageForFewSeconds(message) {
+    const showMessageForFewSeconds = (message) => {
         setNullValue(true);
         setTimeout(() => {
             setNullValue(false);
-        }, 2000); // Message disappears after 5 seconds (5000 milliseconds)
+        }, 2000);
     };
     // Tải hình ảnh
     async function chooseImage() {
@@ -54,16 +53,16 @@ export default function RegisterScreen() {
 
 
     // Xử lý đăng ký
-    function handeRegister() {
+    const handeRegister = async () => {
 
-        if (!firstname || !lastname || !username || !email || !password || !avatar) {
+        if (!first_name || !last_name || !username || !email || !password || !avatar) {
             showMessageForFewSeconds('Vui lòng điền đầy đủ thông tin')
             return;
         }
 
         let formRegister = new FormData();
-        formRegister.append('firstname', firstname);
-        formRegister.append('lastname', lastname);
+        formRegister.append('first_name', first_name);
+        formRegister.append('last_name', last_name);
         formRegister.append('username', username);
         formRegister.append('email', email);
         formRegister.append('password', password);
@@ -79,21 +78,32 @@ export default function RegisterScreen() {
 
         setIsLoading(true)
 
-        axios.post('https://hieuecourse.pythonanywhere.com/user/', formRegister, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        })
-            .then(function (response) {
-                console.log(response);
-                setIsLoading(false)
-                goLogin()
-            })
-            .catch(function (error) {
-                console.log(error.response);
-                setIsLoading(false)
-
+        try {
+            const response = await API.post(endpoints['user'], formRegister, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
             });
+            setIsLoading(false);
+            goLogin();
+        } catch (error) {
+            setIsLoading(false);
+            // Xử lý lỗi
+            if (error.response && error.response.status === 400) {
+                const errorMessage = 'Email đã tồn tại';
+                showMessage({
+                    message: errorMessage,
+                    type: 'danger',
+                    duration: 3000,
+                });
+            } else {
+                showMessage({
+                    message: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
+                    type: 'danger',
+                    duration: 3000,
+                });
+            }
+        }
 
 
     }
@@ -111,11 +121,11 @@ export default function RegisterScreen() {
                 <Text style={styles.wellcome}>Chia sẻ chuyến đi tuyện vời.</Text>
             </View>
             <View>
-                <InputCpm placeholder={'Họ'} onChangeText={(value) => setFirstName(value)}></InputCpm>
-                <InputCpm placeholder={'Tên'} onChangeText={(value) => setLastName(value)}></InputCpm>
-                <InputCpm placeholder={'Tên tài khoản'} onChangeText={(value) => setUsername(value)}></InputCpm>
-                <InputCpm placeholder={'Email'} onChangeText={(value) => setEmail(value)}></InputCpm>
-                <InputPass placeholder={'Mật khẩu'} onChangeText={(value) => setPassword(value)}></InputPass>
+                <InputCpm placeholder={'Họ'} onChangeText={(value) => setFirstName(value)} />
+                <InputCpm placeholder={'Tên'} onChangeText={(value) => setLastName(value)} />
+                <InputCpm placeholder={'Tên tài khoản'} onChangeText={(value) => setUsername(value)} />
+                <InputCpm placeholder={'Email'} onChangeText={(value) => setEmail(value)} />
+                <InputPass placeholder={'Mật khẩu'} onChangeText={(value) => setPassword(value)} />
                 {avatar ? (
                     <Image source={{ uri: avatar }} style={styles.imageUpload} />
                 ) : (
@@ -126,7 +136,7 @@ export default function RegisterScreen() {
 
             </View>
             <View style={styles.buttonContainer}>
-                {isLoading ? (<ActivityIndicator color={'black'} size={'large'}/>) : (
+                {isLoading ? (<ActivityIndicator color={'black'} size={'large'} />) : (
                     <ButtonMain title={'Đăng ký'} onPress={handeRegister}></ButtonMain>
                 )}
             </View>
@@ -137,10 +147,7 @@ export default function RegisterScreen() {
             </View>
             <View style={styles.optionLoginContainer}>
                 <TouchableOpacity>
-                    <Image source={require('../assets/google.png')} style={styles.optionImage}></Image>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Image source={require('../assets/facebook.png')} style={styles.optionImage}></Image>
+                    <Image source={require('../../assets/google.png')} style={styles.optionImage}></Image>
                 </TouchableOpacity>
             </View>
             <View style={styles.loginContainer}>

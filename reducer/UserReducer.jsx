@@ -1,4 +1,4 @@
-export default function (currentState, action) {
+const UserReducer = (currentState, action) => {
     switch (action.type) {
         case 'login':
             return action.payload;
@@ -7,3 +7,5 @@ export default function (currentState, action) {
     }
     return currentState
 }
+
+export default UserReducer

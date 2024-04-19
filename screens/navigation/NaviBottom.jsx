@@ -4,14 +4,15 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 // screens
-import HomeScreen from "../Home";
-import ProfileScreen from "../Profile";
-import NotificationScreen from "../Notification";
-import MessengerScreen from "../Messenger";
+import ProfileScreen from "../Profile/Profile";
+import NotificationScreen from "../Notifi/Notification";
+import MessengerScreen from "../Message/Messenger";
 import MyContext from "../../config/MyContext";
 import UserReducer from "../../reducer/UserReducer";
-import LoginScreen from "../Login";
-import AddJourney from "../AddJourney";
+import AddJourney from "../Journey/AddJourney";
+import HomeScreen from "../Home/Home";
+import LoginScreen from "../SignInAndUp/Login";
+import { mainColor } from "../../assets/color";
 
 
 
@@ -43,12 +44,11 @@ export default function NaviBottom() {
               else if (route.name === "Đăng nhập") {
                 iconName = focused ? "person-circle-sharp" : "person-circle-sharp"
               }
-              // else if (route.name === "Trang cá nhân") {
-              //   // return (
-              //   //   <Image source={require(user.avatar)} style={{ width: 28, height: 28, borderRadius: 50, resizeMode: 'cover' }} />
-              //   // )
-              //   iconName = focused ? "person-circle-outline" : "person-circle-outline"
-              // }
+              else if (route.name === "Trang cá nhân") {
+                return (
+                  <Image source={{uri:user.avatar}} style={{ width: 26, height: 26, borderRadius: 50,borderWidth:1,borderColor:mainColor, resizeMode: 'cover' }} />
+                )
+              }
               return <Icon name={iconName} size={26} color={color} />;
             },
             tabBarLabel: () => null,

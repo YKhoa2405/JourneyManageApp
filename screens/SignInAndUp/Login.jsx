@@ -1,16 +1,16 @@
 import React, { useContext, useState } from "react";
 import { View, Text, TouchableOpacity, Image, Alert, TouchableHighlight } from "react-native";
-import { mainColor } from "../assets/color";
-import ButtonMain from "./components/ButtonMain";
-import InputCpm from "./components/InputCpm";
-import LoginStyle from "../styles/LoginStyle";
-import RegisterScreen from "./Register";
-import InputPass from "./components/InputPass";
-import NaviBottom from "./navigation/NaviBottom";
-import axios from 'axios';
-import MyContext from "../config/MyContext";
-import API, { endpoints } from "../config/API";
+import { mainColor } from "../../assets/color";
+import ButtonMain from "../components/ButtonMain";
+import InputCpm from "../components/InputCpm";
+import LoginStyle from "../../styles/LoginStyle";
+import InputPass from "../components/InputPass";
+import NaviBottom from "../navigation/NaviBottom";
+import MyContext from "../../config/MyContext";
+import API, { authApi, endpoints } from "../../config/API";
 import { ActivityIndicator } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import RegisterScreen from "./Register";
 export default function LoginScreen() {
 
 
@@ -39,31 +39,22 @@ export default function LoginScreen() {
             let data = {
                 username: username,
                 password: password,
-                client_id: "KVmbMpN6sjvf8joWQdWRCISHqiI8PcbIqw2ZRyXP",
-                client_secret: "JJFWE3qFRLMdiBW91JRJNop139fBnEurmKKONHHJsTZigpEgqTyoClqtcE0MaMw1AacAroiSqxivUhux72Ac1xDzqaFe8UuXFPadoDJNHyCBx3gcKQlNJZTr5vnYAhGN",
+                client_id: "p6H2zSQ1txBXUS6eqo9YDlzPYaV5VGD9gpYebi7e",
+                client_secret: "EePq8ZK2g0vGRlFxD3LksHst1D7AajIqzCgIVKoP35oRDRnzYNdKGBZ7liWMH9CiRHcybnQVj1kaCwbDjPBAjmATDeKZgOPY6BJkZ4Gme3xWQ0TBZzcMxYMBEJ5sWgJf",
                 grant_type: "password",
             };
             let res = await API.post(endpoints["login"], data, { headers: header });
-            console.info(res.data);
+            await AsyncStorage.setItem("access-token", res.data.access_token)
+
+            let user = await authApi(res.data.access_token).get(endpoints["current_user"]);
 
             dispatch({
-                type: 'login',
-                payload: res.data
+                'type': 'login',
+                'payload': user.data
             })
+            goHome()
         } catch (ex) {
-            if (ex.response) {
-                // Server trả về phản hồi có lỗi
-                console.error("Server error:", ex.response.data);
-                Alert.alert("Server error:", ex.response.data);
-            } else if (ex.request) {
-                // Không nhận được phản hồi từ server
-                console.error("No response received from server");
-                Alert.alert("No response received from server");
-            } else {
-                // Lỗi xảy ra khi thiết lập yêu cầu
-                console.error("Error setting up request:", ex.message);
-                Alert.alert("Error setting up request:", ex.message);
-            }
+            console.error(ex)
         } finally {
             setLoading(false);
         }
@@ -103,10 +94,7 @@ export default function LoginScreen() {
             </View>
             <View style={LoginStyle.optionLoginContainer}>
                 <TouchableOpacity>
-                    <Image source={require('../assets/google.png')} style={LoginStyle.optionImage}></Image>
-                </TouchableOpacity>
-                <TouchableOpacity>
-                    <Image source={require('../assets/facebook.png')} style={LoginStyle.optionImage}></Image>
+                    <Image source={require('../../assets/google.png')} style={LoginStyle.optionImage}></Image>
                 </TouchableOpacity>
             </View>
             <View style={LoginStyle.registerContainer}>
