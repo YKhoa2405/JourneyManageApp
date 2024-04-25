@@ -4,6 +4,8 @@ const UserReducer = (currentState, action) => {
             return action.payload;
         case 'logout':
             return null;
+        case 'update_user':
+            return action.payload
     }
     return currentState
 }

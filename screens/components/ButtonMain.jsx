@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
-import { mainColor } from "../../assets/color";
+import { mainColor, txt16 } from "../../assets/color";
 
 export default function ButtonMain({title, onPress}){
     return(
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     },
     buttonText:{
         color:'white',
-        fontSize:16,
+        fontSize:txt16,
         fontWeight:'500'
     }
 })

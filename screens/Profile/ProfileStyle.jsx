@@ -36,6 +36,26 @@ const ProfileStyle = StyleSheet.create({
         paddingHorizontal: 20,
         borderTopWidth:1,
         borderColor:borderUnder,
+    },
+    // Style JourneyHistory
+    editContainer:{
+        margin:20,
+        marginTop:30,
+        alignContent:'center',
+        flex:1,
+        flexDirection:'column'
+
+    },
+    fabContainer:{
+        position:'absolute',
+        top:90,
+        left:'50%'
+        
+    },
+    fabAvatar:{
+        left:0,
+        top:0,
+        backgroundColor:white
     }
 })
 

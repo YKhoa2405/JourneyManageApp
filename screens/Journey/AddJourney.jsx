@@ -1,16 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Pressable, Platform, TextInput, TouchableOpacity, ScrollView, FlatList } from "react-native";
 import InputCpm from "../components/InputCpm";
 import HomeStyle from "../../styles/HomeStyle";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ButtonMain from "../components/ButtonMain";
-import { mainColor, white } from "../../assets/color";
+import { black, borderUnder, mainColor, txt16, white } from "../../assets/color";
 import MapView from "react-native-maps";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 import GOOGLE_API_KEY from "../../config/GOOGLE_API_KEY";
+import axios from "axios";
+import AutocompleteInput from "react-native-autocomplete-input";
+import JourneyStyle from "./JourneyStyle";
 
 export default function AddJourney() {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [suggestions, setSuggestions] = useState([]);
     // các giá trị của tạo hành trình
     const [journeyName, setJourneyName] = useState('')
     const [startLocation, setStartLocation] = useState(null)
@@ -25,7 +30,6 @@ export default function AddJourney() {
     const toggleDatepicker = () => {
         setShowPicker(!showPicker)
     }
-
     const fotmatDate = (rawDate) => {
         let date = new Date(rawDate)
 
@@ -35,7 +39,6 @@ export default function AddJourney() {
 
         return `${day}-${month}-${year}`;
     }
-
     //onChange: xử lý sự kiện 
     const onChange = ({ type }, selectedDate) => {
         // type===set có nghĩa là nhấn ok
@@ -54,6 +57,38 @@ export default function AddJourney() {
         }
     }
 
+    // Gán địa chỉ lên bản đồ
+    // const handleFind = async (text) => {
+    //     setSearchQuery(text)
+    //     try {
+    //         const response = await fetch(`https://dev.virtualearth.net/REST/v1/Locations?query=${text}&key=${GOOGLE_API_KEY}`)
+
+    //         const data = await response.json()
+    //         const first
+    //     } catch (error) {
+
+    //     }
+
+    // }
+    // Tìm kiếm ddịa điểm, fetxh api 
+    const handleQuery = async (text) => {
+        setSearchQuery(text);
+        if (text === '') {
+            return;
+        }
+        try {
+            const response = await fetch(
+                `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${text}&key=${GOOGLE_API_KEY}`
+            );
+            const data = await response.json();
+            const suggestions = data.resourceSets[0].resources.map((resource) => resource.value.map((a) => a.address.formattedAddress));
+            setSuggestions(suggestions);
+        } catch (error) {
+            console.error("Error searching suggestions:", error);
+        }
+    };
+
+
     const handeAddJourney = () => {
         console.log('Start Location:', startLocation);
         console.log('End Location:', endLocation);
@@ -62,161 +97,62 @@ export default function AddJourney() {
 
 
     return (
-        <FlatList
-            style={styles.container}
-            data={['journeyName', 'startingLocation', 'endDestination', 'startTime']}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item, index }) => {
-                return (
-                    <View style={styles.itemContainer}>
-                        {index === 0 ? (
-                            <>
-                                <Text style={HomeStyle.text}>Tên hành trình</Text>
-                                <Icon name="wallet-travel" size={26} style={styles.icon} />
-                                <InputCpm placeholder={'Tên hành trình'}
-                                    value={journeyName}
-                                    onChangeText={setJourneyName} />
-                            </>
-                        ) : index === 1 ? (
-                            <>
-                                <Text style={HomeStyle.text}>Điểm bắt đầu</Text>
-                                <Icon name="map-outline" size={26} style={styles.icon} />
-                                <GooglePlacesAutocomplete
-                                    placeholder="Điểm bắt đầu"
-                                    onPress={(data, details = null) => {
-                                        // 'data' chứa thông tin vị trí đã chọn
-                                        console.log(data);
-                                    }}
-                                    query={{
-                                        key: 'Ah_ImlEnO0v_llPAVvpW6MQETM5uL3ZBNSlfvh_aIjUs8nmj9rj80HJCzXgmSzRG',
-                                        language: 'vi',
-                                    }}
-                                    styles={{ textInput: styles.InputTime }}
-                                />
-                            </>
-                        ) : index === 2 ? (
-                            <>
-                                <Text style={HomeStyle.text}>Điểm kết thúc</Text>
-                                <Icon name="map-outline" size={26} style={styles.icon} />
-                                <GooglePlacesAutocomplete
-                                    placeholder="Điểm kết thúc"
-                                    onPress={(data, details = null) => {
-                                        // 'data' chứa thông tin vị trí đã chọn
-                                        console.log(data);
-                                    }}
-                                    query={{
-                                        key: 'Ah_ImlEnO0v_llPAVvpW6MQETM5uL3ZBNSlfvh_aIjUs8nmj9rj80HJCzXgmSzRG',
-                                        language: 'vi',
-                                    }}
-                                    styles={{ textInput: styles.InputTime }}
+        <View style={JourneyStyle.container}>
+            <MapView style={JourneyStyle.map} />
+            <View style={JourneyStyle.searchContainer}>
 
-                                />
-                            </>
-                        ) : index === 3 ? (
-                            <>
-                                <Text style={HomeStyle.text}>Thời gian</Text>
-                                <Icon name="calendar-blank-outline" size={26} style={styles.icon} />
-                                {!showPicker && (
-                                    <Pressable onPress={toggleDatepicker}>
-                                        <TextInput
-                                            placeholder={'Thời gian'}
-                                            value={dateStart}
-                                            onChangeText={setDateStart}
-                                            editable={false}
-                                            style={styles.InputTime}
-                                        />
-                                    </Pressable>
-                                )}
-                                {showPicker && (
-                                    <DateTimePicker
-                                        mode="date"
-                                        value={date}
-                                        display="spinner"
-                                        onChange={onChange}
-                                    />
-                                )}
-                            </>
-                        ) : (
-                            <View style={styles.itemContainer}>
-                            </View>
-                        )}
-                    </View>
-                );
-            }}
-            ListFooterComponent={() => (
-                <>
-                    <View style={styles.addButtonContainer}>
-                        <ButtonMain title={'Tạo hành trình'}
-                            onPress={handeAddJourney} />
-                    </View>
-                    <TouchableOpacity style={styles.buttonCancel}>
-                        <Text style={styles.buttonText}>Thoát</Text>
-                    </TouchableOpacity>
-                </>
-            )}
-        />
+                <View style={JourneyStyle.itemContainer}>
+                    <Icon name="wallet-travel" size={26} style={JourneyStyle.icon}></Icon>
+                    <TextInput style={JourneyStyle.InputTime}
+                        placeholder="Tên hành trình" />
+                </View>
+                <View style={JourneyStyle.itemContainer}>
+                    <Icon name="calendar-blank-outline" size={26} style={JourneyStyle.icon}></Icon>
+                    {!showPicker && (
+                        <Pressable onPress={toggleDatepicker}>
+                            <TextInput placeholder={'Thời gian bắt đầu'}
+                                value={dateStart}
+                                onChangeText={setDateStart}
+                                editable={false}
+                                style={JourneyStyle.InputTime}></TextInput>
+                        </Pressable>
+                    )}
+                </View>
+                {/* /* Hiển thị picker ngày tháng */}
+                <View>
+                    {showPicker && (
+                        <DateTimePicker
+                            mode="date"
+                            value={date}
+                            display="spinner"
+                            onChange={onChange}
+                        />
+                    )}
+                </View>
+                <View style={JourneyStyle.itemContainer}>
+                    <Icon name="map-outline" size={26} style={JourneyStyle.icon}></Icon>
+                    <TextInput
+                        placeholder="Search"
+                        style={JourneyStyle.InputTime}
+                        value={searchQuery}
+                        onChangeText={handleQuery}
+                    />
+                </View>
+                <View style={JourneyStyle.suggestion}>
+                    {suggestions.length == 0  ? (
+                        <></>
+                    ) : (
+                        <>
+                            {suggestions.map((s, index) => (
+                                <TouchableOpacity key={index} onPress={() => handleFind(s)}>
+                                    <Text style={JourneyStyle.txtsugestion}>{s}</Text>
+                                </TouchableOpacity>
+                            ))}
+                        </>
+                    )}
+                </View>
+            </View>
+        </View>
 
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        paddingHorizontal: 20,
-    },
-    addButtonContainer: {
-        marginTop: 50
-    },
-    itemContainer: {
-        marginTop: 20
-    },
-    icon: {
-        paddingVertical: 13,
-        paddingHorizontal: 10,
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-    },
-    InputTime: {
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderRadius: 10,
-        padding: 10,
-        marginTop: 10,
-        backgroundColor: 'white',
-        color: 'black'
-    },
-    InputMap: {
-        backgroundColor: white,
-        borderWidth: 1,
-        borderColor: 'grey',
-        marginTop: 10
-
-    },
-    buttonCancel: {
-        backgroundColor: white,
-        padding: 18,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: mainColor,
-        marginTop: 15,
-        elevation: 4,
-        marginBottom: 20
-    },
-    buttonText: {
-        color: mainColor,
-        fontSize: 16,
-        fontWeight: '500'
-    },
-    containerMap: {
-        marginTop: 20,
-        borderRadius: 10
-    },
-    map: {
-        width: '100%',
-        height: 250,
-        borderRadius: 10
-    }
-})

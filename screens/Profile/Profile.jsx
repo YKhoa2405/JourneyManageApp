@@ -4,10 +4,12 @@ import ProfileStyle from "./ProfileStyle";
 import ItemProfile from "../components/ItemProfile";
 import HomeStyle from "../../styles/HomeStyle";
 import MyContext from "../../config/MyContext";
+import MyJourney from "../Journey/MyJourney";
+import EditProfile from "./EditProfile";
 
-export default function ProfileScreen() {
+const ProfileScreen=({navigation})=> {
     const [user, dispatch] = useContext(MyContext);
-
+    const [dataJourney,setDataJourney] = useState([])
     // Logout
     const handleLogout =()=>{
         dispatch({
@@ -29,7 +31,8 @@ export default function ProfileScreen() {
             <View style={ProfileStyle.ProfileInfo}>
                 <View style={ProfileStyle.profileContent}>
                     <ItemProfile label={'Chỉnh sửa thông tin'}
-                        icon={'account-edit-outline'} />
+                        icon={'account-edit-outline'}
+                        onPress={() => navigation.navigate(EditProfile)} />
                 </View>
                 <View style={ProfileStyle.profileContent}>
                     <ItemProfile label={'Đang theo dõi'}
@@ -38,10 +41,9 @@ export default function ProfileScreen() {
                         icon={'account-check-outline'} />
                 </View>
                 <View style={ProfileStyle.profileContent}>
-                    <ItemProfile label={'Hành trình của bạn'}
-                        icon={'wallet-travel'} />
-                    <ItemProfile label={'Hành trình bạn tham gia'}
-                        icon={'bag-suitcase-outline'} />
+                    <ItemProfile label={'Hành trình'}
+                        icon={'wallet-travel'}
+                        onPress={() => navigation.navigate(MyJourney)} />
                 </View>
                 <View style={ProfileStyle.profileContent}>
                     <ItemProfile label={'Đăng xuất'}
@@ -49,7 +51,10 @@ export default function ProfileScreen() {
                         onPress={handleLogout}/>
                 </View>
             </View>
-
         </View>
+
+        
     );
 }
+
+export default ProfileScreen

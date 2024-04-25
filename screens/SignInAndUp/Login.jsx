@@ -39,15 +39,16 @@ export default function LoginScreen() {
             let data = {
                 username: username,
                 password: password,
-                client_id: "p6H2zSQ1txBXUS6eqo9YDlzPYaV5VGD9gpYebi7e",
-                client_secret: "EePq8ZK2g0vGRlFxD3LksHst1D7AajIqzCgIVKoP35oRDRnzYNdKGBZ7liWMH9CiRHcybnQVj1kaCwbDjPBAjmATDeKZgOPY6BJkZ4Gme3xWQ0TBZzcMxYMBEJ5sWgJf",
+                client_id: "LBXajny8yeTJ2htXFtXQI9ObsORb2asnIhtUDfJM",
+                client_secret: "vH9OlZXMiGm3IUYfxohsM2EjIawGjJgexSE2Y9RsB8EBe7CkeWyr3Cj6M9NbwoZxVAkzx9ST6NUtSaY4OToh5J8QdGBzi8h7GtPSzgNJefdD9UeOgZ8QfMO2JyhtgCX0",
                 grant_type: "password",
             };
             let res = await API.post(endpoints["login"], data, { headers: header });
             await AsyncStorage.setItem("access-token", res.data.access_token)
-
+            console.log(res.data);
             let user = await authApi(res.data.access_token).get(endpoints["current_user"]);
-
+            const token = await AsyncStorage.getItem('access-token')
+            console.log(token)
             dispatch({
                 'type': 'login',
                 'payload': user.data

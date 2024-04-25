@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, ActivityIndicator } from "react-native";
-import { borderUnder, mainColor } from "../../assets/color";
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, ActivityIndicator, ScrollView } from "react-native";
+import { borderUnder, errorMess, mainColor, white } from "../../assets/color";
 import ButtonMain from "../components/ButtonMain";
 import InputCpm from "../components/InputCpm";
 import InputPass from "../components/InputPass";
@@ -21,6 +21,7 @@ export default function RegisterScreen() {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
+    const [phone, setPhone] = useState('')
     const [avatar, setAvatar] = useState(null)
 
     // chuyển trang login
@@ -55,7 +56,7 @@ export default function RegisterScreen() {
     // Xử lý đăng ký
     const handeRegister = async () => {
 
-        if (!first_name || !last_name || !username || !email || !password || !avatar) {
+        if (!first_name || !phone || !last_name || !username || !email || !password || !avatar) {
             showMessageForFewSeconds('Vui lòng điền đầy đủ thông tin')
             return;
         }
@@ -65,6 +66,7 @@ export default function RegisterScreen() {
         formRegister.append('last_name', last_name);
         formRegister.append('username', username);
         formRegister.append('email', email);
+        formRegister.append('phone', phone);
         formRegister.append('password', password);
         if (avatar) {
             const uriParts = avatar.split('.');
@@ -110,51 +112,53 @@ export default function RegisterScreen() {
 
 
     return (
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={{ display: isLoading || nullValue ? 'flex' : 'none' }}>
+                    {nullValue && <MessageError message={'Vui lòng nhập đầy đủ thông tin!!'} color={errorMess} tcolor={white} />}
+                </View>
+                <View style={styles.comtainerTitle}>
+                    <Text style={styles.title}>Đăng ký</Text>
+                    <Text style={styles.wellcome}>Xin chào bạn,</Text>
+                    <Text style={styles.wellcome}>Chia sẻ chuyến đi tuyện vời.</Text>
+                </View>
+                <View>
+                    <InputCpm placeholder={'Họ'} onChangeText={(value) => setFirstName(value)} />
+                    <InputCpm placeholder={'Tên'} onChangeText={(value) => setLastName(value)} />
+                    <InputCpm placeholder={'Tên tài khoản'} onChangeText={(value) => setUsername(value)} />
+                    <InputCpm placeholder={'Email'} onChangeText={(value) => setEmail(value)} />
+                    <InputCpm placeholder={'Số điện thoại (+84)'} onChangeText={(value) => setPhone(value)} />
+                    <InputPass placeholder={'Mật khẩu'} onChangeText={(value) => setPassword(value)} />
+                    {avatar ? (
+                        <Image source={{ uri: avatar }} style={styles.imageUpload} />
+                    ) : (
+                        <TouchableOpacity onPress={chooseImage} style={{ width: '100%', height: 50, backgroundColor: borderUnder, borderRadius: 1, alignItems: 'center', justifyContent: 'center', marginTop: 15, borderRadius: 10 }}>
+                            <Text style={{ fontSize: 16 }}>Tải ảnh của bạn</Text>
+                        </TouchableOpacity>
+                    )}
 
-        <View style={styles.container}>
-            <View style={{ display: isLoading || nullValue ? 'flex' : 'none' }}>
-                {nullValue && <MessageError message={'Vui lòng nhập đầy đủ thông tin!!'} />}
-            </View>
-            <View style={styles.comtainerTitle}>
-                <Text style={styles.title}>Đăng ký</Text>
-                <Text style={styles.wellcome}>Xin chào bạn,</Text>
-                <Text style={styles.wellcome}>Chia sẻ chuyến đi tuyện vời.</Text>
-            </View>
-            <View>
-                <InputCpm placeholder={'Họ'} onChangeText={(value) => setFirstName(value)} />
-                <InputCpm placeholder={'Tên'} onChangeText={(value) => setLastName(value)} />
-                <InputCpm placeholder={'Tên tài khoản'} onChangeText={(value) => setUsername(value)} />
-                <InputCpm placeholder={'Email'} onChangeText={(value) => setEmail(value)} />
-                <InputPass placeholder={'Mật khẩu'} onChangeText={(value) => setPassword(value)} />
-                {avatar ? (
-                    <Image source={{ uri: avatar }} style={styles.imageUpload} />
-                ) : (
-                    <TouchableOpacity onPress={chooseImage} style={{ width: '100%', height: 50, backgroundColor: borderUnder, borderRadius: 1, alignItems: 'center', justifyContent: 'center', marginTop: 15, borderRadius: 10 }}>
-                        <Text style={{ fontSize: 16 }}>Tải ảnh của bạn</Text>
+                </View>
+                <View style={styles.buttonContainer}>
+                    {isLoading ? (<ActivityIndicator color={'black'} size={'large'} />) : (
+                        <ButtonMain title={'Đăng ký'} onPress={handeRegister}></ButtonMain>
+                    )}
+                </View>
+                <View style={styles.lineContainer}>
+                    <View style={styles.line}></View>
+                    <Text style={styles.lineText}>hoặc</Text>
+                    <View style={styles.line}></View>
+                </View>
+                <View style={styles.optionLoginContainer}>
+                    <TouchableOpacity>
+                        <Image source={require('../../assets/google.png')} style={styles.optionImage}></Image>
                     </TouchableOpacity>
-                )}
-
+                </View>
+                <View style={styles.loginContainer}>
+                    <Text style={styles.forgotPass}>Bạn đã có tài khoản ? </Text>
+                    <TouchableOpacity onPress={goLogin}><Text style={{ fontWeight: '500', color: mainColor }}>Đăng nhập</Text></TouchableOpacity>
+                </View>
             </View>
-            <View style={styles.buttonContainer}>
-                {isLoading ? (<ActivityIndicator color={'black'} size={'large'} />) : (
-                    <ButtonMain title={'Đăng ký'} onPress={handeRegister}></ButtonMain>
-                )}
-            </View>
-            <View style={styles.lineContainer}>
-                <View style={styles.line}></View>
-                <Text style={styles.lineText}>hoặc</Text>
-                <View style={styles.line}></View>
-            </View>
-            <View style={styles.optionLoginContainer}>
-                <TouchableOpacity>
-                    <Image source={require('../../assets/google.png')} style={styles.optionImage}></Image>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.loginContainer}>
-                <Text style={styles.forgotPass}>Bạn đã có tài khoản ? </Text>
-                <TouchableOpacity onPress={goLogin}><Text style={{ fontWeight: '500', color: mainColor }}>Đăng nhập</Text></TouchableOpacity>
-            </View>
-        </View>
+        </ScrollView>
     )
 }
 
@@ -181,7 +185,8 @@ const styles = StyleSheet.create({
     loginContainer: {
         flexDirection: 'row',
         justifyContent: 'center', alignItems: 'center',
-        marginTop: 20
+        marginTop: 20,
+        marginBottom:30
     },
     imageUpload: {
         marginTop: 15,

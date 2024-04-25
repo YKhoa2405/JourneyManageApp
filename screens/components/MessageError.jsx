@@ -1,17 +1,17 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
+import { txt16, white } from "../../assets/color";
 
-export default function MessageSuss({ message }) {
+export default function MessageSuss({ message, color,tcolor }) {
     return (
-        <View style={styles.container}>
-            <Text style={styles.text}>{message}</Text>
+        <View style={[styles.container, { backgroundColor: color }]}>
+            <Text style={[styles.text, { color: tcolor }]}>{message}</Text>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#dc143c',
         padding: 10,
         borderRadius: 5,
         marginBottom: 10,
@@ -22,10 +22,10 @@ const styles = StyleSheet.create({
         right: 0,
         alignItems: 'center',
         zIndex: 1,
-        
+
     },
     text: {
-        color: 'white',
-        fontSize: 16,
+        color: white,
+        fontSize: txt16,
     },
 });

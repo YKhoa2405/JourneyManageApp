@@ -10,11 +10,13 @@ import { Avatar } from "react-native-paper";
 import MyContext from "../../config/MyContext";
 import API, { endpoints } from "../../config/API";
 
+
 const HomeScreen = () => {
     const [isLoading, setLoading] = useState(true);
     const [user, dispatch] = useContext(MyContext);
 
     const [dataJourney, setDataJourney] = useState([])
+    
 
 
     useEffect(() => {
@@ -24,7 +26,8 @@ const HomeScreen = () => {
     const JourneyGet = async () => {
         try {
             const res = await API.get(endpoints['get_journey']);
-            setDataJourney(res.data.results)
+            const journey = res.data.results
+            setDataJourney(journey)
         } catch (error) {
             console.error('Error fetching data:', error);
         } finally {
@@ -32,10 +35,7 @@ const HomeScreen = () => {
         }
     }
 
-    const RandomImage = async () => {
-        const resimage = await axios.get('https://jsonplaceholder.typicode.com/photos');
-
-    }
+    const shareData = useContext(MyContext)
 
     const renderJourneyItem = ({ item }) => {
         return (
