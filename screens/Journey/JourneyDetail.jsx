@@ -5,7 +5,6 @@ import JourneyStyle from "./JourneyStyle";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MapView from "react-native-maps";
-import Post from "../components/Post";
 import API, { authApi, endpoints } from "../../config/API";
 import { Avatar } from "react-native-paper";
 import { black, heart } from "../../assets/color";
