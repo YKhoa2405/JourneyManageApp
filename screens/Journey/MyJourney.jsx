@@ -53,7 +53,9 @@ const MyJourney = () => {
                 <View style={JourneyStyle.itemContent}>
                     <View style={JourneyStyle.infoJourney}>
 
-                        <Text style={{fontWeight:'bold', fontSize:txt16}}>{item.name_journey}</Text>
+                        <Text style={{fontWeight:'bold', fontSize:txt16, marginBottom:10}}>{item.name_journey}</Text>
+                        <Text style={{fontWeight:'bold', fontSize:txt16}}>{item.start_location}</Text>
+                        <Text style={{fontWeight:'bold', fontSize:txt16}}>{item.end_location}</Text>
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         <View>

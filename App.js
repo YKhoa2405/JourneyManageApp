@@ -4,6 +4,8 @@ import React, { useState } from 'react';
 import NaviBottom from './screens/navigation/NaviBottom';
 import { createStackNavigator } from '@react-navigation/stack';
 import JourneyDetail from './screens/Journey/JourneyDetail';
+import Post from './screens/components/Post';
+import ProfileScreen from './screens/Profile/Profile';
 
 
 

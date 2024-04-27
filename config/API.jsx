@@ -6,9 +6,10 @@ export const endpoints = {
     'user': '/user/',
     'login': "/o/token/",
     'current_user': '/user/current_user/',
-    'update_user':'/user/current_user/',
+    'update_user': '/user/current_user/',
     'get_journey': '/journey/',
-    'post': (journeyId)=>`/journey/${journeyId}/post/`
+    'del_journey': (journeyId) => `/journey/${journeyId}/`,
+    'post': (journeyId) => `/journey/${journeyId}/posts/`
 
 }
 

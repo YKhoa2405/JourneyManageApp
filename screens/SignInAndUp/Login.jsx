@@ -45,10 +45,9 @@ export default function LoginScreen() {
             };
             let res = await API.post(endpoints["login"], data, { headers: header });
             await AsyncStorage.setItem("access-token", res.data.access_token)
-            console.log(res.data);
+
             let user = await authApi(res.data.access_token).get(endpoints["current_user"]);
-            const token = await AsyncStorage.getItem('access-token')
-            console.log(token)
+            
             dispatch({
                 'type': 'login',
                 'payload': user.data

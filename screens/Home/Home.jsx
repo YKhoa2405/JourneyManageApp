@@ -9,6 +9,7 @@ import ButtonMain from "../components/ButtonMain";
 import { Avatar } from "react-native-paper";
 import MyContext from "../../config/MyContext";
 import API, { endpoints } from "../../config/API";
+import moment from "moment";
 
 
 const HomeScreen = () => {
@@ -35,7 +36,6 @@ const HomeScreen = () => {
         }
     }
 
-    const shareData = useContext(MyContext)
 
     const renderJourneyItem = ({ item }) => {
         return (
@@ -73,7 +73,7 @@ const HomeScreen = () => {
                         <View style={{ marginVertical: 10, marginLeft: 4 }}>
                             <View style={HomeStyle.goStart}>
                                 <Icon name="clock-time-four-outline" size={25}></Icon>
-                                <Text style={HomeStyle.text}>{item.departure_time}</Text>
+                                <Text style={HomeStyle.text}>{moment(item.departure_time).format('DD-MM-YYYY')}</Text>
                             </View>
                         </View>
                         <View style={HomeStyle.cardInfo}>
@@ -110,7 +110,7 @@ const HomeScreen = () => {
             <View style={HomeStyle.header}>
                 <View style={HomeStyle.headerTitle}>
                     <Avatar.Image size={30} source={require('../../assets/google.png')} />
-                    <Text style={HomeStyle.nameTitle}>Xin chào, </Text>
+                    <Text style={HomeStyle.nameTitle}>Xin chào,  </Text>
                 </View>
                 <View>
                     <SearchCpm placeholder={'Tìm kiếm hành trình...'}></SearchCpm>

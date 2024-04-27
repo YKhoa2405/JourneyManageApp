@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, StyleSheet } from "react-native";
-import { borderUnder, white, black, mainColor, txt18, txt16 } from "../../assets/color";
+import { borderUnder, white, black, mainColor, txt18, txt16, txt22 } from "../../assets/color";
 const { width } = Dimensions.get('window');
 const itemWidth = (width / 2);
 const JourneyStyle = StyleSheet.create({
@@ -82,13 +82,12 @@ const JourneyStyle = StyleSheet.create({
     },
     // My Journey
     JourneyContainer: {
-        flex: 1
+        flex: 1,
     },
     itemJourney: {
-        flex: 1,
         flexDirection: 'column',
         margin: 10,
-        height: 280,
+        height: 300,
         width: itemWidth - 20,
         backgroundColor: white,
         elevation: 4,
@@ -96,21 +95,21 @@ const JourneyStyle = StyleSheet.create({
     },
     itemImage: {
         flex: 1,
-        overflow:'hidden',
-        resizeMode:'contain',
-        borderTopLeftRadius:10,
-        borderTopRightRadius:10
+        overflow: 'hidden',
+        resizeMode: 'contain',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10
     },
     itemContent: {
         flex: 1,
-        padding:10
+        padding: 10
     },
-    infoJourney:{
-        flex:1,
+    infoJourney: {
+        flex: 1,
     },
-    userJourney:{
-        flexDirection:'row',
-        alignItems:'center',
+    userJourney: {
+        flexDirection: 'row',
+        alignItems: 'center',
 
     },
     emptyList: {
@@ -120,15 +119,85 @@ const JourneyStyle = StyleSheet.create({
     // journey Detail
     addPostButton: {
         position: 'absolute',
-        top: 680,
-        right: 10,
+        top: 670,
+        right: 20,
         width: 60,
         height: 60,
         backgroundColor: mainColor,
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 50
+    },
+    //post
+    containerPost: {
+        flex: 1,
+        backgroundColor: white
+    },
+    coverImage:{
+        flex:1,
+    },
+    timeHeader: {
+        marginTop: 20,
+        marginBottom: 10,
+        marginHorizontal: 20,
+        flexDirection: 'row',
+        alignItems: 'center'
+    },
+    time: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        marginRight: 10
+    },
+    horizontalLine: {
+        flex: 1,
+        backgroundColor: borderUnder,
+        height: 4,
+        borderRadius: 10
+    },
+    postHeader: {
+        marginHorizontal: 20,
+        flexDirection: 'row',
+        justifyContent: 'space-between'
+    },
+    owner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    nameOwner: {
+        marginLeft: 5,
+        opacity: 0.7
+    },
+    postContent: {
+        marginHorizontal: 20,
+        marginVertical: 10
+    },
+    postImage: {
+        height: 450,
+        resizeMode: 'cover'
+    },
+    postFeeling: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginHorizontal: 20,
+        marginVertical: 10
+    },
+    postInteract: {
+        alignItems: 'center',
+        flexDirection: 'row',
+        marginBottom: 10
+    },
+    interactItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 20
+    },
+    delIcon:{
+        position:'absolute',
+        top:10,
+        right:10
     }
+
 
 })
 
