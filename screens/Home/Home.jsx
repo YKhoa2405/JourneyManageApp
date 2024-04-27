@@ -10,6 +10,7 @@ import { Avatar } from "react-native-paper";
 import MyContext from "../../config/MyContext";
 import API, { endpoints } from "../../config/API";
 import moment from "moment";
+import Toast from "react-native-toast-message";
 
 
 const HomeScreen = () => {
@@ -21,7 +22,12 @@ const HomeScreen = () => {
 
 
     useEffect(() => {
-        JourneyGet()
+        const intervalId = setInterval(() => {
+            JourneyGet(); // Gọi API ở đây
+        }, 5000); // Thực hiện gọi API mỗi 5 giây (có thể thay đổi số giây tùy ý)
+
+        // Xóa interval khi component bị unmount
+        return () => clearInterval(intervalId);
     }, [])
 
     const JourneyGet = async () => {
@@ -34,6 +40,16 @@ const HomeScreen = () => {
         } finally {
             setLoading(false)
         }
+    }
+
+    const toast = () => {
+        Toast.show({
+            type: 'success',
+            text1: 'Thành công',
+            text2: 'Xóa nhà trọ thành công.',
+            visibilityTime: 3000, // Thời gian tồn tại của toast (milliseconds)
+            autoHide: true, // Tự động ẩn toast sau khi hết thời gian tồn tại
+        });
     }
 
 
@@ -93,7 +109,7 @@ const HomeScreen = () => {
                             </View>
                         </View>
                         <View style={HomeStyle.btnAddJourney}>
-                            <ButtonMain title="Tham gia hành trình" />
+                            <ButtonMain title="Tham gia hành trình" onPress={toast}/>
                         </View>
                     </View>
                 </View>

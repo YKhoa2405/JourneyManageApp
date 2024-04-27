@@ -9,7 +9,13 @@ export const endpoints = {
     'update_user': '/user/current_user/',
     'get_journey': '/journey/',
     'del_journey': (journeyId) => `/journey/${journeyId}/`,
-    'post': (journeyId) => `/journey/${journeyId}/posts/`
+    'edit_journey':(journeyId)=>`/journey/${journeyId}/`,
+    // post
+    'post': (journeyId) => `/journey/${journeyId}/posts/`,
+    // comment
+    'add_comment':(postId) => `/post/${postId}/add_comment/`,
+    'get_comment':(postId) => `/post/${postId}/comments/`,
+
 
 }
 

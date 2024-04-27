@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, StyleSheet } from "react-native";
-import { borderUnder, white, black, mainColor, txt18, txt16, txt22 } from "../../assets/color";
+import { borderUnder, white, black, mainColor, txt18, txt16, txt22, item } from "../../assets/color";
 const { width } = Dimensions.get('window');
 const itemWidth = (width / 2);
 const JourneyStyle = StyleSheet.create({
@@ -129,9 +129,12 @@ const JourneyStyle = StyleSheet.create({
         borderRadius: 50
     },
     //post
+    JourneyPostContainer:{
+        flex:1,backgroundColor:white
+    },
     containerPost: {
         flex: 1,
-        backgroundColor: white
+        marginBottom:20
     },
     coverImage:{
         flex:1,
@@ -193,9 +196,47 @@ const JourneyStyle = StyleSheet.create({
         marginLeft: 20
     },
     delIcon:{
-        position:'absolute',
-        top:10,
-        right:10
+        flexDirection:'row',
+        justifyContent:'flex-end',
+        backgroundColor:mainColor,
+        borderRadius:10,
+        marginHorizontal:10
+    },
+    touIcon:{
+        padding:10,
+    },
+    listMember:{
+        marginHorizontal:20,
+        marginTop:30  
+    },
+    // comment post
+    commentContainer:{
+        flex:1,
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        marginHorizontal:20,
+    },
+    inputComment:{
+        width:'80%',
+        marginHorizontal:10,
+        borderWidth:1,
+        borderColor:borderUnder,
+        padding:5,
+        borderRadius:10
+    },
+    viewComment:{
+        flexDirection:'row',
+        alignItems:'center',
+        marginTop:10,
+        marginHorizontal:18
+    },
+    contentComment:{
+        backgroundColor:borderUnder,
+        paddingHorizontal:10,
+        paddingVertical:5,
+        marginLeft:10,
+        borderRadius:20
     }
 
 

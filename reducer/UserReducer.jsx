@@ -6,6 +6,8 @@ const UserReducer = (currentState, action) => {
             return null;
         case 'update_user':
             return action.payload
+        case 'delete_journey':
+            return action.payload
     }
     return currentState
 }
