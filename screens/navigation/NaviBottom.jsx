@@ -15,10 +15,10 @@ import LoginScreen from "../SignInAndUp/Login";
 import { mainColor } from "../../assets/color";
 import { createStackNavigator } from "@react-navigation/stack";
 import MyJourney from "../Journey/MyJourney";
-import JourneyDetail from "../Journey/JourneyDetail";
+import JourneyDetail, { EditPost } from "../Journey/JourneyDetail";
 import EditProfile from "../Profile/EditProfile";
-
-
+import Toast from "react-native-toast-message";
+import CommentScreen from "../Journey/Comment";
 
 
 const Tab = createBottomTabNavigator();
@@ -69,6 +69,7 @@ export default function NaviBottom() {
             <Tab.Screen name="Đăng nhập" component={LoginScreen} options={{ headerShown: false }} /> :
             <Tab.Screen name="Trang cá nhân" component={StackNavigator} options={{ headerShown: false }} />}
         </Tab.Navigator>
+        <Toast />
       </NavigationContainer>
     </MyContext.Provider>
   );
@@ -78,9 +79,11 @@ function StackNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="MyJourney"  component={MyJourney} options={{title:'Hành trình'}}/>
-      <Stack.Screen name="JourneyDetail" component={JourneyDetail} options={{title:'Chi tiết hành trình'}} />
-      <Stack.Screen name="EditProfile"  component={EditProfile} options={{title:'Chỉnh sửa thông tin'}}/>
+      <Stack.Screen name="MyJourney" component={MyJourney} options={{ title: 'Hành trình bạn tham gia' }} />
+      <Stack.Screen name="JourneyDetail" component={JourneyDetail} options={{ title: 'Chi tiết hành trình', headerShown: false }} />
+      <Stack.Screen name="EditProfile" component={EditProfile} options={{ title: 'Chỉnh sửa thông tin' }} />
+      <Stack.Screen name="CommentScreen" component={CommentScreen} options={{ title: 'Bình luận' }} />
+      <Stack.Screen name="EditPost" component={EditPost} options={{ title: 'Chỉnh sử bài đăng' }} />
     </Stack.Navigator>
   );
 }

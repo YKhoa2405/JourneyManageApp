@@ -1,5 +1,5 @@
-import React, { useContext, useState, ActivityIndicator } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useContext, useState } from "react";
+import { View, Text, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import MyContext from "../../config/MyContext";
 import ProfileStyle from "./ProfileStyle";
 import { FAB } from "react-native-paper";
@@ -9,13 +9,13 @@ import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authApi, endpoints } from "../../config/API";
 import { ScrollView } from "react-native-gesture-handler";
-import MessageSuss from "../components/MessageError";
-import { black, successMess } from "../../assets/color";
+import { black } from "../../assets/color";
+import Toast from "react-native-toast-message";
 
 
 const EditProfile = () => {
     const [user, dispatch] = useContext(MyContext)
-    const [showNotification, setShowNotification] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const [username, setUsername] = useState(user.username)
     const [first_name, setFirstName] = useState(user.first_name)
@@ -38,6 +38,8 @@ const EditProfile = () => {
     }
 
     const handleSave = async () => {
+        setLoading(true)
+
         let formEdit = new FormData()
         formEdit.append('username', username)
         formEdit.append('first_name', first_name)
@@ -61,28 +63,21 @@ const EditProfile = () => {
                 }
             })
             dispatch({ type: 'update_user', payload: res.data });
-            setShowNotification(true);
-
             setTimeout(() => {
-                setShowNotification(false);
-            }, 3000); // 3 giây
+                Toast.show({
+                    type: 'success',
+                    text1: 'Chỉnh sửa hồ sơ thành công',
+                });
+            }, 4000);
 
         } catch (error) {
             console.error(error);
-        }
+        } finally { setLoading(false) }
     }
 
     return (
         <ScrollView>
             <View style={ProfileStyle.editContainer}>
-                <View>
-                    {showNotification && (
-                        <MessageSuss
-                            message="Cập nhật thành công!"
-                            color={successMess}
-                            tcolor={black}
-                        />
-                    )}</View>
                 <View style={{ alignItems: 'center' }}>
                     {avatar ? (
                         <Image source={{ uri: avatar }} style={ProfileStyle.avatar} />
@@ -106,7 +101,9 @@ const EditProfile = () => {
 
                 </View>
                 <View>
-                    <ButtonMain title={'Lưu thông tin'} onPress={handleSave}></ButtonMain>
+                    {loading ? (<ActivityIndicator size={'large'} color={black} />) : (
+                        <ButtonMain title={'Lưu thông tin'} onPress={handleSave}></ButtonMain>
+                    )}
                 </View>
             </View>
         </ScrollView>

@@ -9,12 +9,14 @@ export const endpoints = {
     'update_user': '/user/current_user/',
     'get_journey': '/journey/',
     'del_journey': (journeyId) => `/journey/${journeyId}/`,
-    'edit_journey':(journeyId)=>`/journey/${journeyId}/`,
+    'edit_journey': (journeyId) => `/journey/${journeyId}/`,
     // post
     'post': (journeyId) => `/journey/${journeyId}/posts/`,
+    'del_post': (postId) => `/post/${postId}/`,
+    'like_count':(postId) => `/post/${postId}/likes_count/`,
     // comment
-    'add_comment':(postId) => `/post/${postId}/add_comment/`,
-    'get_comment':(postId) => `/post/${postId}/comments/`,
+    'add_comment': (postId) => `/post/${postId}/add_comment/`,
+    'get_comment': (postId) => `/post/${postId}/comments/`,
 
 
 }

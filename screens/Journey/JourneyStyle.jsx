@@ -117,6 +117,9 @@ const JourneyStyle = StyleSheet.create({
     },
 
     // journey Detail
+    imagesContainer:{
+        height:450
+    },
     addPostButton: {
         position: 'absolute',
         top: 670,
@@ -129,18 +132,17 @@ const JourneyStyle = StyleSheet.create({
         borderRadius: 50
     },
     //post
-    JourneyPostContainer:{
-        flex:1,backgroundColor:white
-    },
     containerPost: {
         flex: 1,
-        marginBottom:20
+        paddingBottom: 10,
+        marginBottom:25,
+        backgroundColor:white
     },
-    coverImage:{
-        flex:1,
+    coverImage: {
+        flex: 1,
     },
     timeHeader: {
-        marginTop: 20,
+        marginTop: 10,
         marginBottom: 10,
         marginHorizontal: 20,
         flexDirection: 'row',
@@ -186,6 +188,8 @@ const JourneyStyle = StyleSheet.create({
         marginVertical: 10
     },
     postInteract: {
+        borderTopWidth:0.5,
+        borderColor:borderUnder,
         alignItems: 'center',
         flexDirection: 'row',
         marginBottom: 10
@@ -193,50 +197,68 @@ const JourneyStyle = StyleSheet.create({
     interactItem: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginLeft: 20
+        marginLeft: 20,
+        marginTop:10
     },
-    delIcon:{
+    headerIcon: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        backgroundColor: mainColor,
+        paddingTop:25,
+    },
+    editIcon:{
         flexDirection:'row',
-        justifyContent:'flex-end',
-        backgroundColor:mainColor,
-        borderRadius:10,
-        marginHorizontal:10
+        alignItems:'center'
     },
-    touIcon:{
-        padding:10,
+    touIcon: {
+        padding: 13,
     },
-    listMember:{
-        marginHorizontal:20,
-        marginTop:30  
+    listMember: {
+        marginHorizontal: 20,
+        marginTop: 30
+    },
+    backDrop:{
+        flex:1,
+        backgroundColor:white,
+        borderRadius:20,
+    },
+    itemSheet: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding:20,
     },
     // comment post
-    commentContainer:{
-        flex:1,
-        flexDirection:'row',
-        alignItems:'center',
-        justifyContent:'center',
-        marginHorizontal:20,
+    commentContainer: {
+        position:'absolute',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginHorizontal: 20,
+        bottom:10,
+        left:0,
+        right: 0,
     },
-    inputComment:{
-        width:'80%',
-        marginHorizontal:10,
-        borderWidth:1,
-        borderColor:borderUnder,
-        padding:5,
-        borderRadius:10
+    inputComment: {
+        width: '80%',
+        marginHorizontal: 10,
+        borderWidth: 1,
+        borderColor: borderUnder,
+        padding: 10,
+        borderRadius: 10,
+        backgroundColor:white
     },
-    viewComment:{
-        flexDirection:'row',
-        alignItems:'center',
-        marginTop:10,
-        marginHorizontal:18
+    viewComment: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+        marginHorizontal: 18
     },
-    contentComment:{
-        backgroundColor:borderUnder,
-        paddingHorizontal:10,
-        paddingVertical:5,
-        marginLeft:10,
-        borderRadius:20
+    contentComment: {
+        backgroundColor: borderUnder,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginLeft: 10,
+        borderRadius: 20
     }
 
 
