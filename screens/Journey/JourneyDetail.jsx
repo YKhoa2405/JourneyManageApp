@@ -83,9 +83,12 @@ const JourneyDetail = ({ route }) => {
     };
 
     const goEditPost = (postID) => {
-        let token = 
         navigation.navigate('EditPost', { postID: postID });
     };
+
+    const goAddPost = (journeyID) => {
+        navigation.navigate('AddPost', { journeyID: journeyID })
+    }
 
     const handleDeletePost = async (postID) => {
         Alert.alert(
@@ -130,9 +133,6 @@ const JourneyDetail = ({ route }) => {
     return (
 
         <View>
-            {/* <TouchableOpacity style={JourneyStyle.addPostButton}>
-                <Icon name="add" size={30} />
-            </TouchableOpacity> */}
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={JourneyStyle.headerIcon}>
                     <View>
@@ -141,16 +141,17 @@ const JourneyDetail = ({ route }) => {
                         </TouchableOpacity>
                     </View>
                     <View style={JourneyStyle.editIcon}>
+                        <TouchableOpacity style={JourneyStyle.touIcon}
+                            onPress={goAddPost}
+                        >
+                            <Icon name="plus-circle-outline" size={28} color={black} />
+                        </TouchableOpacity>
                         <TouchableOpacity style={JourneyStyle.touIcon}>
                             <Icon name="circle-edit-outline" size={28} color={black} />
                         </TouchableOpacity>
                         <TouchableOpacity style={JourneyStyle.touIcon}
                             onPress={handleDeleteJourney}>
                             <Icon name="delete-outline" size={28} color={'red'} />
-                        </TouchableOpacity>
-                        <TouchableOpacity style={JourneyStyle.touIcon}
-                        >
-                            <Icon name="alert-octagon-outline" size={28} color={black} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -181,13 +182,13 @@ const JourneyDetail = ({ route }) => {
                                 <View style={JourneyStyle.postContent}>
                                     <Text>{c.content}</Text>
                                 </View>
-                                    <View>
+                                <View>
 
-                                        {c.images.map((image, index) => (
-                                            <Image source={{ uri: image.image }} style={JourneyStyle.postImage} key={index} />
+                                    {c.images.map((image, index) => (
+                                        <Image source={{ uri: image.image }} style={JourneyStyle.postImage} key={index} />
 
-                                        ))}
-                                    </View>
+                                    ))}
+                                </View>
                                 <View style={JourneyStyle.postFeeling}>
                                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                         <Icon name="cards-heart" color={heart} size={24} />
@@ -205,7 +206,7 @@ const JourneyDetail = ({ route }) => {
                                         <Icon name="cards-heart-outline" size={26} />
                                         <Text style={JourneyStyle.nameOwner}>Thích</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={JourneyStyle.interactItem} onPress={()=>goEditPost(c.id)}>
+                                    <TouchableOpacity style={JourneyStyle.interactItem} onPress={() => goEditPost(c.id)}>
                                         <Icon name="circle-edit-outline" size={26} />
                                         <Text style={JourneyStyle.nameOwner}>Chỉnh sửa</Text>
                                     </TouchableOpacity>
@@ -221,7 +222,7 @@ const JourneyDetail = ({ route }) => {
     );
 };
 
-export const EditPost=({route})=>{
+export const EditPost = ({ route }) => {
 
 }
 

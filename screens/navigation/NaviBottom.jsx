@@ -19,6 +19,8 @@ import JourneyDetail, { EditPost } from "../Journey/JourneyDetail";
 import EditProfile from "../Profile/EditProfile";
 import Toast from "react-native-toast-message";
 import CommentScreen from "../Journey/Comment";
+import AddPost from "../Journey/AddPost";
+import MessageDetail from "../Message/MessageDetail";
 
 
 const Tab = createBottomTabNavigator();
@@ -62,12 +64,12 @@ export default function NaviBottom() {
           })}
         >
           <Tab.Screen name="Trang chủ" component={HomeScreen} options={{ headerShown: false }} />
-          <Tab.Screen name="Nhắn tin" component={MessengerScreen} />
+          <Tab.Screen name="Nhắn tin" component={MessStackNavigator} options={{headerShown:false}} />
           <Tab.Screen name="Thêm hành trình" component={AddJourney} options={{ headerShown: false }} />
           <Tab.Screen name="Thông báo" component={NotificationScreen} />
           {user == null ?
             <Tab.Screen name="Đăng nhập" component={LoginScreen} options={{ headerShown: false }} /> :
-            <Tab.Screen name="Trang cá nhân" component={StackNavigator} options={{ headerShown: false }} />}
+            <Tab.Screen name="Trang cá nhân" component={ProfileStackNavigator} options={{ headerShown: false }} />}
         </Tab.Navigator>
         <Toast />
       </NavigationContainer>
@@ -75,7 +77,7 @@ export default function NaviBottom() {
   );
 }
 
-function StackNavigator() {
+function ProfileStackNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
@@ -84,8 +86,18 @@ function StackNavigator() {
       <Stack.Screen name="EditProfile" component={EditProfile} options={{ title: 'Chỉnh sửa thông tin' }} />
       <Stack.Screen name="CommentScreen" component={CommentScreen} options={{ title: 'Bình luận' }} />
       <Stack.Screen name="EditPost" component={EditPost} options={{ title: 'Chỉnh sử bài đăng' }} />
+      <Stack.Screen name="AddPost" component={AddPost} options={{ title: 'Tạo bài viết' }} />
     </Stack.Navigator>
   );
+}
+
+function MessStackNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="MessengerScreen" component={MessengerScreen} options={{ headerShown: false }} />
+        <Stack.Screen name="MessageDetail" component={MessageDetail}  options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  )
 }
 
 

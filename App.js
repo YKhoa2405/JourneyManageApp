@@ -4,6 +4,7 @@ import Toast from 'react-native-toast-message';
 
 import NaviBottom from './screens/navigation/NaviBottom';
 import BottomSheet from './screens/components/BottomSheet';
+import UIHeader from './screens/components/UIHeader';
 
 
 
@@ -12,7 +13,7 @@ import BottomSheet from './screens/components/BottomSheet';
 
 export default function App() {
   return (
-    <NaviBottom></NaviBottom>
+    <UIHeader></UIHeader>
   );
 }
 

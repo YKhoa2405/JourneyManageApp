@@ -122,7 +122,7 @@ const JourneyStyle = StyleSheet.create({
     },
     addPostButton: {
         position: 'absolute',
-        top: 670,
+        top: 20,
         right: 20,
         width: 60,
         height: 60,
@@ -135,7 +135,7 @@ const JourneyStyle = StyleSheet.create({
     containerPost: {
         flex: 1,
         paddingBottom: 10,
-        marginBottom:25,
+        marginBottom:10,
         backgroundColor:white
     },
     coverImage: {

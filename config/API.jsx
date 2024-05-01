@@ -13,6 +13,7 @@ export const endpoints = {
     // post
     'post': (journeyId) => `/journey/${journeyId}/posts/`,
     'del_post': (postId) => `/post/${postId}/`,
+    'add_post':'/post/',
     'like_count':(postId) => `/post/${postId}/likes_count/`,
     // comment
     'add_comment': (postId) => `/post/${postId}/add_comment/`,
