@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native"
-import { borderUnder, item, mainColor } from "../assets/color"
+import { black, borderUnder, item, mainColor } from "../assets/color"
 
 const HomeStyle = StyleSheet.create({
     container: {
@@ -8,14 +8,16 @@ const HomeStyle = StyleSheet.create({
     header: {
         backgroundColor: mainColor,
         borderBottomLeftRadius: 10,
-        paddingBottom:20,
+        paddingBottom: 12,
         borderBottomRightRadius: 10
     },
     headerTitle: {
-        marginTop: 20,
+        marginTop: 12,
         flexDirection: 'row',
         alignItems: 'center',
-        padding: 20,
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 10
     },
     nameTitle: {
         fontSize: 16,
@@ -30,14 +32,14 @@ const HomeStyle = StyleSheet.create({
     content: {
         marginTop: 20,
     },
-    contentTitle:{
-        paddingHorizontal:20,
+    contentTitle: {
+        paddingHorizontal: 20,
 
     },
     // ItemHome
     text: {
-        opacity: 0.5,
-        marginLeft: 2
+        opacity: 0.7,
+        marginLeft: 5
     },
 
     containerItemHome: {
@@ -59,22 +61,29 @@ const HomeStyle = StyleSheet.create({
     },
     optionHomeItem: {
         flexDirection: 'row',
-        paddingRight:10
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    cardInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-around'
     },
     cardJourney: {
         flex: 1,
         backgroundColor: 'white',
-        flexDirection:'column',
-        marginHorizontal:20,
-        borderRadius:10,
-        elevation:5
+        flexDirection: 'column',
+        marginHorizontal: 20,
+        borderRadius: 10,
+        elevation: 5
     },
-    cardImage:{
-        flex:1,
+    cardImage: {
+        flex: 1,
     },
     cardContent: {
         flex: 1,
-        padding:10
+        padding: 10
     },
     nameJourney: {
         fontSize: 18,
@@ -86,21 +95,30 @@ const HomeStyle = StyleSheet.create({
         alignItems: 'center',
     },
     line: {
-        borderWidth: 1,
+        borderWidth: 0.5,
         width: 1,
         height: 15,
-        marginLeft: 14,
+        marginLeft: 12,
         opacity: 0.2
     },
-    cardInfo: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+    btnAddJourney: {
+        marginTop: 20,
+        marginBottom: 10
     },
-    btnAddJourney:{
-        marginTop:20,
-        marginBottom:10
+    styleLoading: {
+        flex: 1, justifyContent: 'center', alignItems: 'center'
+    },
+    containerMember: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderColor: borderUnder,
+        backgroundColor: white,
+        flex: 1,
+        justifyContent: 'space-between'
     }
+
 })
 
 export default HomeStyle

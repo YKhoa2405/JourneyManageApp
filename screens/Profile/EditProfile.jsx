@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { View, Text, Image, TouchableOpacity, ActivityIndicator } from "react-native";
 import MyContext from "../../config/MyContext";
 import ProfileStyle from "./ProfileStyle";
-import { FAB } from "react-native-paper";
+import { Avatar, FAB } from "react-native-paper";
 import InputCpm from "../components/InputCpm";
 import ButtonMain from "../components/ButtonMain";
 import * as ImagePicker from 'expo-image-picker';
@@ -80,9 +80,9 @@ const EditProfile = () => {
             <View style={ProfileStyle.editContainer}>
                 <View style={{ alignItems: 'center' }}>
                     {avatar ? (
-                        <Image source={{ uri: avatar }} style={ProfileStyle.avatar} />
+                        <Avatar.Image source={{ uri: avatar }} size={110} />
                     ) : (
-                        <Image source={{ uri: user.avatar }} style={ProfileStyle.avatar} />
+                        <Avatar.Image source={{ uri: user.avatar }} size={110} />
                     )}
                     <TouchableOpacity style={ProfileStyle.fabContainer}
                         onPress={handleChooseImage}>

@@ -1,67 +1,113 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, Alert } from "react-native";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { View, Text, FlatList, Alert, TouchableOpacity, TextInpu, Image } from "react-native";
 import MessageStyle from "./MessageStyle";
 import { Avatar, Badge } from "react-native-paper";
+import JourneyStyle from "../Journey/JourneyStyle";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import UIHeader from "../components/UIHeader";
-import { useNavigation } from "@react-navigation/native";
+import { GiftedChat, Send } from "react-native-gifted-chat";
+import { firestore } from "../../config/FirebaseConfig";
+import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, setDoc, updateDoc } from "firebase/firestore";
+import MyContext from "../../config/MyContext";
+import { black, mainColor } from "../../assets/color";
 
-const MessageDetail = ({ route }) => {
-    const { userChat } = route.params;
-    const navigation = useNavigation()
 
-    const goMess = () => {
-        navigation.goBack()
-    }
 
-    const [chatHistory, setChatHistory] = useState([
-        {
-            url: 'https://randomuser.me/api/results',
-            isSender: true,
-            message: 'Hello',
-            timestamp: 16416542380000,
-        }, {
-            url: 'https://randomuser.me/api/',
-            isSender: true,
-            message: 'How are you hjgflsdjkfhalsdkjhfljksdfhlasdljhkfhasdfhksjldflkahjsd',
-            timestamp: 16416542980000,
-        },
-        // false là mình
-        {
-            url: 'https://randomuser.me/api/',
-            isSender: false,
-            message: 'im fine ,and you',
-            timestamp: 16416543000000,
-        },
-        {
-            url: 'https://randomuser.me/api/',
-            isSender: true,
-            message: 'toi klhor klkkk',
-            timestamp: 16416543500000,
-        },
-    ])
+const MessageDetail = ({ route, navigation }) => {
+    const { userChatID } = route.params;
+    const [user, dispatch] = useContext(MyContext);
+    const chatId = [user.id.toString(), userChatID.id.toString()].sort().join('_');
+
+
+    const [messages, setMessages] = useState([])
+    console.log(userChatID);
+    console.log(user.id);
+
+
+
+    useEffect(() => {
+
+        const subscriber = collection(firestore, "chats", chatId, "messages")
+        const shortSubscriber = query(subscriber, orderBy("createdAt", "desc"))
+
+        const unsubscribe = onSnapshot(shortSubscriber, (querySnapshot) => {
+            const allMessages = querySnapshot.docs.map((doc) => {
+                return { ...doc.data(), createdAt: doc.data().createdAt.toDate() }; // Chuyển đổi thời gian tạo thành đối tượng Date
+            });
+            setMessages(allMessages);
+        });
+        return () => unsubscribe();
+    }, [])
+
+
+    const onSend = useCallback(async (messages = []) => {
+        const msg = messages[0];
+        const timestamp = new Date()
+        const chatSessionDocRef = doc(firestore, "chatSessions", chatId)
+
+        try {
+            const chatSessionDoc = await getDoc(chatSessionDocRef)
+            if (!chatSessionDoc.exists()) {
+                await setDoc(chatSessionDocRef, {
+                    userSendById: user,
+                    userSendToId: userChatID,
+                    lastMess: msg.text,
+                    lastMessTime: timestamp,
+                    isSeen: false //chưa xem khi gửi đi
+
+                })
+            } else {
+                await updateDoc(chatSessionDocRef, {
+                    lastMess: msg.text,
+                    lastMessTime: timestamp,
+                    isSeen: false //chưa xem khi gửi đi
+
+                })
+            }
+        } catch (error) {
+            console.error("Lỗi khi lưu tin nhắn vào chat session:", error);
+        }
+        const myMsg = {
+            ...msg,
+            sendBy: user.id,
+            sendTo: userChatID.id,
+            createdAt: msg.createdAt, // Sử dụng createdAt trực tiếp
+            isSeen: false //chưa xem khi gửi đi
+        }
+
+        addDoc(collection(firestore, "chats", chatId, "messages"), myMsg);
+        setMessages(previousMessages =>
+            GiftedChat.append(previousMessages, messages),
+        )
+    }, [userChatID])
+
+
     return (
-        <View>
+        <View style={{ flex: 1 }}>
             <UIHeader
-                title={userChat.name}
+                title={userChatID.username}
                 leftIcon={'arrow-left'}
-                rightIcon={'alert-circle'}
-                handleLeftIcon={goMess}
+                handleLeftIcon={() => navigation.goBack()}
             />
-            <FlatList
-                data={chatHistory}
-                keyExtractor={(item) => item.message} // Sử dụng trường 'name' làm key
-                renderItem={({ item }) => (
-                    <View style={[MessageStyle.itemContainer, { flexDirection: item.isSender ? 'row':'row-reverse' }]}>
-                        {/* Hiển thị Avatar bên trái nếu isSender là false, và bên phải nếu isSender là true */}
-                        <Avatar.Image source={{ uri: item.url }} size={40} style={{ marginHorizontal: 5 }} />
-                        <View style={[MessageStyle.messageContent, { justifyContent: item.isSender ? 'flex-start' : 'flex-end' }]}>
-                            <Text style={MessageStyle.messageText}>{item.message}</Text>
-                        </View>
-                    </View>
-                )}
+
+            <GiftedChat
+                messages={messages}
+                onSend={(messages) => onSend(messages)}
+                user={{ _id: user.id }}
+                renderAvatar={(props) => <Avatar.Image {...props} source={{ uri: userChatID.avatar }} size={32} />}
+                renderSend={props => {
+                    return (
+                        <Send {...props} >
+                            <Image source={require("../../assets/send.png")} style={{ width: 22, height: 22, marginRight: 14, marginBottom: 12 }} />
+                        </Send>
+                    )
+                }}
             />
         </View>
     )
 }
 
 export default MessageDetail
+
+
+

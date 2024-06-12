@@ -20,11 +20,10 @@ const MessageStyle = StyleSheet.create({
     },
     name: {
         fontSize: txt18,
-        fontWeight: 'bold',
+        fontWeight: '600',
         marginBottom: 5
     }, time: {
-        marginBottom: 5,
-        opacity: 0.5
+        opacity: 0.8
     },
     messageContent: {
         flex:1,

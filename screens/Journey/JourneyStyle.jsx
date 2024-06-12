@@ -1,28 +1,25 @@
 import React from "react";
 import { Dimensions, StyleSheet } from "react-native";
-import { borderUnder, white, black, mainColor, txt18, txt16, txt22, item } from "../../assets/color";
+import { borderUnder, white, black, mainColor, txt18, txt16, txt22, item, txt20, textWeight, txt24 } from "../../assets/color";
 const { width } = Dimensions.get('window');
 const itemWidth = (width / 2);
+const windowWidth = Dimensions.get('window').width
 const JourneyStyle = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: white,
     },
     addButtonContainer: {
-        marginTop: 50
+        marginTop: 50,
+        width: '90%'
     },
     searchContainer: {
-        position: 'absolute',
-        width: '100%',
         backgroundColor: white,
-        top: 0,
-        paddingTop: 23
     },
     itemContainer: {
-        marginHorizontal: 20,
-        marginVertical: 5
+        marginBottom: 20,
+        width: '90%'
     },
     icon: {
         paddingVertical: 13,
@@ -38,6 +35,7 @@ const JourneyStyle = StyleSheet.create({
         borderColor: 'grey',
         borderRadius: 10,
         padding: 10,
+        paddingRight: 40,
         backgroundColor: white,
         color: black
     },
@@ -70,15 +68,7 @@ const JourneyStyle = StyleSheet.create({
     buttonText: {
         color: mainColor,
         fontSize: 16,
-        fontWeight: '500'
-    },
-    containerMap: {
-        marginTop: 20,
-        borderRadius: 10
-    },
-    map: {
-        width: '100%',
-        height: '100%',
+        fontWeight: textWeight
     },
     // My Journey
     JourneyContainer: {
@@ -90,15 +80,17 @@ const JourneyStyle = StyleSheet.create({
         height: 300,
         width: itemWidth - 20,
         backgroundColor: white,
-        elevation: 4,
+        elevation: 5,
         borderRadius: 10,
     },
     itemImage: {
         flex: 1,
-        overflow: 'hidden',
-        resizeMode: 'contain',
         borderTopLeftRadius: 10,
-        borderTopRightRadius: 10
+        borderTopRightRadius: 10,
+    },
+    styleImage: {
+        width: '100%',
+        resizeMode: 'cover',
     },
     itemContent: {
         flex: 1,
@@ -117,68 +109,72 @@ const JourneyStyle = StyleSheet.create({
     },
 
     // journey Detail
-    imagesContainer:{
-        height:450
-    },
-    addPostButton: {
+    headerContainer: {
         position: 'absolute',
-        top: 20,
+        top: 0, left: 0, right: 0, bottom: 0,
+    },
+
+    floadTingContainer: {
+        position: 'absolute',
+        bottom: 20,
         right: 20,
-        width: 60,
-        height: 60,
+    },
+    headerText:{
+        fontWeight:'bold',
+        fontSize:txt24,
+        color:white
+    },
+    floadTingButton: {
+        position: 'absolute',
+        top: 30,
+        backgroundColor: borderUnder,
+        padding: 5,
+        backgroundColor: mainColor,
+        borderRadius: 10,
+        zIndex: 1
+    },
+    floadTingAddPost: {
+        width: 50,
+        height: 50,
         backgroundColor: mainColor,
         alignItems: 'center',
         justifyContent: 'center',
-        borderRadius: 50
+        borderRadius: 50,
+        elevation: 3
+    },
+    floadTingEnd: {
+        width: 160,
+        height: 40,
+        backgroundColor: mainColor,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 3,
+        borderRadius: 10,
     },
     //post
     containerPost: {
         flex: 1,
         paddingBottom: 10,
-        marginBottom:10,
-        backgroundColor:white
+        marginBottom: 20,
+        backgroundColor: white
     },
     coverImage: {
         flex: 1,
     },
-    timeHeader: {
-        marginTop: 10,
-        marginBottom: 10,
-        marginHorizontal: 20,
-        flexDirection: 'row',
-        alignItems: 'center'
-    },
-    time: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        marginRight: 10
-    },
-    horizontalLine: {
-        flex: 1,
-        backgroundColor: borderUnder,
-        height: 4,
-        borderRadius: 10
-    },
     postHeader: {
-        marginHorizontal: 20,
+        marginTop: 10,
+        marginHorizontal: 16,
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
-    owner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
     nameOwner: {
+        fontSize: txt16,
         marginLeft: 5,
-        opacity: 0.7
+        fontWeight: 'bold'
     },
     postContent: {
-        marginHorizontal: 20,
+        marginHorizontal: 16,
         marginVertical: 10
-    },
-    postImage: {
-        height: 450,
-        resizeMode: 'cover'
     },
     postFeeling: {
         flexDirection: 'row',
@@ -188,8 +184,8 @@ const JourneyStyle = StyleSheet.create({
         marginVertical: 10
     },
     postInteract: {
-        borderTopWidth:0.5,
-        borderColor:borderUnder,
+        borderTopWidth: 0.5,
+        borderColor: borderUnder,
         alignItems: 'center',
         flexDirection: 'row',
         marginBottom: 10
@@ -198,44 +194,27 @@ const JourneyStyle = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginLeft: 20,
-        marginTop:10
+        marginTop: 10
     },
-    headerIcon: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        backgroundColor: mainColor,
-        paddingTop:25,
-    },
-    editIcon:{
-        flexDirection:'row',
-        alignItems:'center'
-    },
-    touIcon: {
-        padding: 13,
-    },
-    listMember: {
-        marginHorizontal: 20,
-        marginTop: 30
-    },
-    backDrop:{
-        flex:1,
-        backgroundColor:white,
-        borderRadius:20,
+    backDrop: {
+        flex: 1,
+        backgroundColor: white,
+        borderRadius: 20,
     },
     itemSheet: {
         flexDirection: 'row',
         alignItems: 'center',
-        padding:20,
+        padding: 20,
     },
     // comment post
     commentContainer: {
-        position:'absolute',
+        position: 'absolute',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginHorizontal: 20,
-        bottom:10,
-        left:0,
+        marginHorizontal: 10,
+        bottom: 10,
+        left: 0,
         right: 0,
     },
     inputComment: {
@@ -245,20 +224,93 @@ const JourneyStyle = StyleSheet.create({
         borderColor: borderUnder,
         padding: 10,
         borderRadius: 10,
-        backgroundColor:white
+        backgroundColor: white
     },
     viewComment: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginTop: 10,
-        marginHorizontal: 18
+        marginTop: 12,
+        marginHorizontal: 8,
+        justifyContent: 'space-between',
+        flex: 1
     },
     contentComment: {
         backgroundColor: borderUnder,
         paddingHorizontal: 10,
         paddingVertical: 5,
         marginLeft: 10,
-        borderRadius: 20
+        borderRadius: 20,
+        flex: 1
+    },
+    viewCommentRep:{
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 10,
+        marginHorizontal: 8,
+        justifyContent: 'space-between',
+        flex: 1,
+        marginLeft:10
+    },
+    contentCommentRep:{
+
+    },
+    listMember: {
+        marginBottom:20,
+        marginTop:10,
+        marginHorizontal: 16,
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    titleMember: {
+        fontSize: txt18,
+        fontWeight: textWeight,
+        opacity: 0.8,
+    },
+    contentMember: {
+        flexDirection: 'row'
+    },
+    imageMember: {
+        marginLeft: 2
+    },
+    ownerJourney: {
+        position: 'absolute',
+        right: 16,
+        bottom: 16
+    },
+    styleModel: {
+        width: '90%',
+        backgroundColor: white,
+        borderRadius: 20,
+        padding: 20,
+        elevation: 5,
+    },
+    headerModel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    ratingStyle: {
+        marginBottom: 30,
+    },
+    headerImage: {
+        width: '100%', height: 280, resizeMode: 'cover'
+    },
+    imagePost:{
+        width: windowWidth - 30,
+        height: 460,
+        resizeMode: 'cover',
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: borderUnder,
+        marginHorizontal:5,
+    }
+    ,deleteImagePost:{
+        position:'absolute',
+        top:10,
+        right:20,
+        zIndex:1
     }
 
 

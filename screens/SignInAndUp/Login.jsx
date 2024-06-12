@@ -5,28 +5,22 @@ import ButtonMain from "../components/ButtonMain";
 import InputCpm from "../components/InputCpm";
 import LoginStyle from "../../styles/LoginStyle";
 import InputPass from "../components/InputPass";
-import NaviBottom from "../navigation/NaviBottom";
 import MyContext from "../../config/MyContext";
 import API, { authApi, endpoints } from "../../config/API";
 import { ActivityIndicator } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import RegisterScreen from "./Register";
-export default function LoginScreen() {
+import Toast from "react-native-toast-message";
 
+
+const LoginScreen = ({ navigation }) => {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [user, dispatch] = useContext(MyContext)
+    
 
-    const [isRegister, setIsRegister] = useState(false)
-    const [isHome, setIsHome] = useState(false)
     const [loading, setLoading] = useState(false);
-    // Chuyển đến trang login
-    function goRegister() { setIsRegister(true) }
-    if (isRegister) { return <RegisterScreen /> }
-    // Chuyến đến trang đăng nhập
-    function goHome() { setIsHome(true) }
-    if (isHome) { return <NaviBottom /> }
+
 
 
     // Xử lý đăng nhập
@@ -47,14 +41,22 @@ export default function LoginScreen() {
             await AsyncStorage.setItem("access-token", res.data.access_token)
 
             let user = await authApi(res.data.access_token).get(endpoints["current_user"]);
-            
+
             dispatch({
                 'type': 'login',
                 'payload': user.data
             })
             goHome()
-        } catch (ex) {
-            console.error(ex)
+        } catch (error) {
+
+            if (error.response && error.response.status === 400) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Thông tin hoặc mật khẩu không chính xác',
+                    visibilityTime: 4000, // Thời gian tồn tại của toast (milliseconds)
+                    autoHide: true, // Tự động ẩn toast sau khi hết thời gian tồn tại
+                });
+            }
         } finally {
             setLoading(false);
         }
@@ -99,8 +101,11 @@ export default function LoginScreen() {
             </View>
             <View style={LoginStyle.registerContainer}>
                 <Text style={LoginStyle.forgotPass}>Bạn chưa có tài khoản ? </Text>
-                <TouchableOpacity onPress={goRegister}><Text style={{ fontWeight: '500', color: mainColor }}>Đăng ký ngay</Text></TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate("RegisterScreen")}><Text style={{ fontWeight: '500', color: mainColor }}>Đăng ký ngay</Text></TouchableOpacity>
             </View>
         </View>
     )
 }
+
+
+export default LoginScreen

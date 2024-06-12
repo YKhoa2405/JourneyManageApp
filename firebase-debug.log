@@ -1,0 +1,65 @@
+[debug] [2024-05-02T03:07:01.404Z] ----------------------------------------------------------------------
+[debug] [2024-05-02T03:07:01.406Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\pc\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2024-05-02T03:07:01.407Z] CLI Version:   13.8.0
+[debug] [2024-05-02T03:07:01.407Z] Platform:      win32
+[debug] [2024-05-02T03:07:01.407Z] Node Version:  v20.11.1
+[debug] [2024-05-02T03:07:01.407Z] Time:          Thu May 02 2024 10:07:01 GMT+0700 (Indochina Time)
+[debug] [2024-05-02T03:07:01.407Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2024-05-02T03:07:01.412Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2024-05-02T03:07:01.412Z] > authorizing via signed-in user (nykhoa2405@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  G:\JourneyManage
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2024-05-02T03:08:10.730Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects pageSize=100
+[debug] [2024-05-02T03:08:11.381Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects 200
+[debug] [2024-05-02T03:08:11.381Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects [omitted]
+[info] i  Using project journeymanage-e5203 (JourneyManage) 
+[info] 
+=== Database Setup
+[info] i  database: ensuring required API firebasedatabase.googleapis.com is enabled... 
+[debug] [2024-05-02T03:08:16.271Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com [none]
+[debug] [2024-05-02T03:08:16.271Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com x-goog-quota-user=projects/journeymanage-e5203
+[debug] [2024-05-02T03:08:17.673Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com 200
+[debug] [2024-05-02T03:08:17.673Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com [omitted]
+[warn] !  database: missing required API firebasedatabase.googleapis.com. Enabling now... 
+[debug] [2024-05-02T03:08:17.676Z] >>> [apiv2][query] POST https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com:enable [none]
+[debug] [2024-05-02T03:08:17.676Z] >>> [apiv2][(partial)header] POST https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com:enable x-goog-quota-user=projects/journeymanage-e5203
+[debug] [2024-05-02T03:08:19.157Z] <<< [apiv2][status] POST https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com:enable 200
+[debug] [2024-05-02T03:08:19.157Z] <<< [apiv2][body] POST https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com:enable [omitted]
+[debug] [2024-05-02T03:08:29.164Z] >>> [apiv2][query] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com [none]
+[debug] [2024-05-02T03:08:29.165Z] >>> [apiv2][(partial)header] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com x-goog-quota-user=projects/journeymanage-e5203
+[debug] [2024-05-02T03:08:30.486Z] <<< [apiv2][status] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com 200
+[debug] [2024-05-02T03:08:30.486Z] <<< [apiv2][body] GET https://serviceusage.googleapis.com/v1/projects/journeymanage-e5203/services/firebasedatabase.googleapis.com [omitted]
+[info] +  database: required API firebasedatabase.googleapis.com is enabled 
+[info] 
+[debug] [2024-05-02T03:08:30.489Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/journeymanage-e5203 [none]
+[debug] [2024-05-02T03:08:30.856Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/journeymanage-e5203 200
+[debug] [2024-05-02T03:08:30.856Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/journeymanage-e5203 {"projectId":"journeymanage-e5203","projectNumber":"49496649677","displayName":"JourneyManage","name":"projects/journeymanage-e5203","resources":{"hostingSite":"journeymanage-e5203"},"state":"ACTIVE","etag":"1_e43a2389-be45-4b9d-a2bd-cade3fc4634b"}
+[debug] [2024-05-02T03:09:25.495Z] >>> [apiv2][query] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances databaseId=journeymanage-e5203-default-rtdb&validateOnly=true
+[debug] [2024-05-02T03:09:25.496Z] >>> [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances {"type":"default_database"}
+[debug] [2024-05-02T03:09:26.952Z] <<< [apiv2][status] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances 200
+[debug] [2024-05-02T03:09:26.952Z] <<< [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances {"name":"projects/49496649677/locations/asia-southeast1/instances/journeymanage-e5203-default-rtdb","project":"projects/49496649677","databaseUrl":"https://journeymanage-e5203-default-rtdb.asia-southeast1.firebasedatabase.app","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[debug] [2024-05-02T03:09:26.953Z] >>> [apiv2][query] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances databaseId=journeymanage-e5203-default-rtdb
+[debug] [2024-05-02T03:09:26.953Z] >>> [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances {"type":"default_database"}
+[debug] [2024-05-02T03:09:27.605Z] <<< [apiv2][status] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances 200
+[debug] [2024-05-02T03:09:27.605Z] <<< [apiv2][body] POST https://firebasedatabase.googleapis.com/v1beta/projects/journeymanage-e5203/locations/asia-southeast1/instances {"name":"projects/49496649677/locations/asia-southeast1/instances/journeymanage-e5203-default-rtdb","project":"projects/49496649677","databaseUrl":"https://journeymanage-e5203-default-rtdb.asia-southeast1.firebasedatabase.app","type":"DEFAULT_DATABASE","state":"ACTIVE"}
+[info] 
+[info] Firebase Realtime Database Security Rules allow you to define how your data should be
+[info] structured and when your data can be read from and written to.
+[info] 

@@ -1,9 +1,8 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, Image, ActivityIndicator, Alert, Button, TextInput, FlatList, StyleSheet, Dimensions, PermissionsAndroid } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import { Avatar, Chip } from "react-native-paper";
-import { black, borderUnder, errorMess, heart, mainColor, successMess, textWeight, txt16, txt18, txt20, txt22, white } from "../../assets/color";
+import { black, borderUnder, errorMess, heart, mainColor, successMess, txt16, txt18, txt20, txt22, white } from "../../assets/color";
 import 'moment/locale/vi';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MyContext from "../../config/MyContext";
@@ -11,68 +10,42 @@ import { ToastMess } from "../components/ToastMess";
 import { authApi, endpoints } from "../../config/API";
 import * as ImagePicker from 'expo-image-picker';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
-import { firestore } from "../../config/FirebaseConfig";
-import * as Location from 'expo-location';
 import JourneyStyle from "./JourneyStyle";
 
 
+const EditPost = ({ route, navigation }) => {
 
-const AddPost = ({ route, navigation }) => {
-    const windowWidth = Dimensions.get('window').width
-    const { journeyID, userID } = route.params;
+    const { postID, post } = route.params;
+    console.log(post)
     const [user, dispatch] = useContext(MyContext)
     const [loading, setLoading] = useState(false)
+    console.log(post.images)
 
-    const [contentPost, setContentPost] = useState('')
-    const [imageVisit, setImageVisit] = useState([])
-    const [visitPoint, setVisitPoint] = useState(null)
-
-    useEffect(() => {
-        (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
-                return;
-            }
-
-            let currentLocation = await Location.getCurrentPositionAsync({});
-
-            const { latitude, longitude } = currentLocation.coords;
-            const API_key =
-                "ArvHYzlNC_zl-qapSPj9KUSjb17DNAmCTHf0Lv-_sWiptCT-R26Ss9wvW5n9ytMr ";
-            const response = await fetch(
-                `http://dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?key=${API_key}`
-            );
-            const data = await response.json();
-            console.log(data)
-            if (data.resourceSets && data.resourceSets.length > 0 && data.resourceSets[0].resources.length > 0) {
-                setVisitPoint(data.resourceSets[0].resources[0].address.formattedAddress);
-            } else {
-                setVisitPoint("Không định vị được ")
-            }
-        })();
-    }, []);
+    const [contentPost, setContentPost] = useState(post.content)
+    const [imageVisit, setImageVisit] = useState(post.images.map(image => image.image))
+    const [visitPoint, setVisitPoint] = useState(post.visit_point)
 
     const selectImages = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false, // Disable allowsEditing since allowsMultipleSelection is enabled
+            allowsEditing: false,
             quality: 1,
-            allowsMultipleSelection: true // Enable multiple image selection
+            allowsMultipleSelection: true
         });
 
         if (!result.canceled) {
             const selectedImages = result.assets.map(asset => asset.uri);
             setImageVisit(prevImages => [...prevImages, ...selectedImages]);
         }
-        console.log(imageVisit);
     };
 
+    const handleDeleteImage = (index) => {
+        setImageVisit(prevImages => prevImages.filter((_, i) => i !== index));
+    };
 
-    const addToPost = async () => {
+    const handleEditPost = async () => {
         setLoading(true)
         let formPost = new FormData()
-        formPost.append('journey', journeyID)
         formPost.append('content', contentPost)
         formPost.append('visit_point', visitPoint)
         if (imageVisit && imageVisit.length > 0) {
@@ -87,34 +60,14 @@ const AddPost = ({ route, navigation }) => {
 
         try {
             let token = await AsyncStorage.getItem('access-token');
-            await authApi(token).post(endpoints['add_post'], formPost, {
+            await authApi(token).patch(endpoints['edit_post'](postID), formPost, {
                 headers: {
                     'accept': 'application/json',
                     'Content-Type': 'multipart/form-data',
                 }
             })
-            ToastMess({ type: 'success', text1: 'Đăng bài viết thành công' })
+            ToastMess({ type: 'success', text1: 'Cập nhật bài viết thành công' })
             navigation.goBack()
-
-            const timestamp = new Date();
-
-            try {
-                // Thêm thông báo vào collection "notifications" với trường userID là ID của người nhận
-                const notifiCollectionRef = collection(firestore, "notifications");
-                await addDoc(notifiCollectionRef, {
-                    timestamp: timestamp,
-                    userID: userID, // ID của người nhận
-                    user: user, // Thông tin về người thực hiện hành động
-                    message: `${user.first_name} đã đăng một bài viết trong hành trình của bạn`,
-                    status: "unread",
-                    journeyID: journeyID,
-                    notifityle: "journey"
-                });
-
-                console.log("Thông báo đã được gửi thành công.");
-            } catch (error) {
-                console.log("Lỗi khi gửi thông báo:", error);
-            }
 
         } catch (error) {
             console.log(error)
@@ -124,23 +77,18 @@ const AddPost = ({ route, navigation }) => {
         }
     }
 
-    const handleDeleteImage = (index) => {
-        setImageVisit(prevImages => prevImages.filter((_, i) => i !== index));
-    };
-
-
     return (
-        <View style={postStyles.container}>
-            <View style={postStyles.header}>
-                <View style={postStyles.headerAvatar}>
+        <View style={styles.container}>
+            <View style={styles.header}>
+                <View style={styles.headerAvatar}>
                     <Avatar.Image source={{ uri: user.avatar }} size={40} />
                     <Text style={{ fontSize: txt18, fontWeight: 'bold', marginLeft: 10 }}>{user.username}</Text>
                 </View>
                 <View>
                     {loading ? (<ActivityIndicator size="large" color={black} />) :
-                        (<TouchableOpacity style={postStyles.buttonPost}
-                            onPress={addToPost}>
-                            <Text style={{ fontWeight: textWeight, fontSize: txt18, color: white }}>Đăng</Text>
+                        (<TouchableOpacity style={styles.buttonPost}
+                            onPress={() => handleEditPost()}>
+                            <Text style={{ fontWeight: '500', fontSize: txt18, color: white }}>Cập nhật</Text>
                         </TouchableOpacity>)}
                 </View>
             </View>
@@ -151,28 +99,22 @@ const AddPost = ({ route, navigation }) => {
                 </View>
                 <TextInput
                     placeholder="Bạn đang nghĩ gì..."
-                    style={[postStyles.content, { flex: 1 }]} multiline={true}
+                    style={[styles.content, { flex: 1 }]} multiline={true}
                     value={contentPost}
                     onChangeText={t => setContentPost(t)} />
-
 
                 <FlatList
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     data={imageVisit}
-                    keyExtractor={(item, index) => index.toString()}
+                    keyExtractor={(item, index) => (item && item.id) ? item.id.toString() : index.toString()}
                     renderItem={({ item }) => (
-                        <View>
-                            <Image source={{ uri: item }} style={JourneyStyle.imagePost} />
-                            <TouchableOpacity>
-                                <Icon name="close" size={24} color={'red'} onPress={() => handleDeleteImage(item.id)} />
-                            </TouchableOpacity>
-                        </View>
+                        <Image source={{ uri: item }} style={JourneyStyle.imagePost} />
                     )}
                 />
 
                 <TouchableOpacity
-                    style={postStyles.uploadPic}
+                    style={styles.uploadPic}
                     onPress={selectImages}>
                     <Icon name="file-image-outline" color={mainColor} size={28} />
                     <Text style={{ marginLeft: 10 }}>Tải hình ảnh của bạn</Text>
@@ -182,9 +124,10 @@ const AddPost = ({ route, navigation }) => {
     )
 }
 
-export default AddPost
+export default EditPost
 
-const postStyles = StyleSheet.create({
+const windowWidth = Dimensions.get('window').width
+const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: white,
@@ -215,8 +158,9 @@ const postStyles = StyleSheet.create({
         margin: 10,
         flex: 1
     },
-    geolocationContainer: {
-        backgroundColor: white,
+    deleteButton: {
+        top: 10,
+
     },
     uploadPic: {
         paddingVertical: 15,

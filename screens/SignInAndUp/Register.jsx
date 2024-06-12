@@ -5,14 +5,12 @@ import ButtonMain from "../components/ButtonMain";
 import InputCpm from "../components/InputCpm";
 import InputPass from "../components/InputPass";
 import * as ImagePicker from 'expo-image-picker';
-import MessageError from "../components/MessageError";
 import API, { Host, endpoints } from "../../config/API";
-import LoginScreen from "./Login";
+import { ToastMess } from "../components/ToastMess";
+import HomeStyle from "../../styles/HomeStyle";
 
 
-
-export default function RegisterScreen() {
-    const [isLogin, setIsLogin] = useState(false)
+const RegisterScreen = ({ navigation }) => {
     const [nullValue, setNullValue] = useState(false) //Kiểm tra thông tin có Đầy đủ thông tin
     const [isLoading, setIsLoading] = useState(false)
     // Biến lưu giá trị đăng ký
@@ -24,20 +22,7 @@ export default function RegisterScreen() {
     const [phone, setPhone] = useState('')
     const [avatar, setAvatar] = useState(null)
 
-    // chuyển trang login
-    const goLogin = () => {
-        setIsLogin(true)
-    }
-    if (isLogin) {
-        return <LoginScreen />
-    }
-    // Hiển thị thông báo
-    const showMessageForFewSeconds = (message) => {
-        setNullValue(true);
-        setTimeout(() => {
-            setNullValue(false);
-        }, 2000);
-    };
+
     // Tải hình ảnh
     async function chooseImage() {
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -57,7 +42,7 @@ export default function RegisterScreen() {
     const handeRegister = async () => {
 
         if (!first_name || !phone || !last_name || !username || !email || !password || !avatar) {
-            showMessageForFewSeconds('Vui lòng điền đầy đủ thông tin')
+            ToastMess({ type: 'error', text1: 'Vui lòng nhập đầy đủ thông tin' })
             return;
         }
 
@@ -77,6 +62,7 @@ export default function RegisterScreen() {
                 type: `image/${fileType}`,
             });
         }
+        console.log(formRegister)
 
         setIsLoading(true)
 
@@ -86,91 +72,91 @@ export default function RegisterScreen() {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+
+            // const userID = uuid.v4()
+            // database().ref('/users/'+userID).set(formRegister)
+            // console.log('ok thanh cong')
             setIsLoading(false);
-            goLogin();
+            ToastMess({ type: 'success', text1: 'Đăng ký tài khoản thành công' })
+
+            navigation.navigate('LoginScreen')
         } catch (error) {
             setIsLoading(false);
+            console.log(error)
             // Xử lý lỗi
             if (error.response && error.response.status === 400) {
-                const errorMessage = 'Email đã tồn tại';
-                showMessage({
-                    message: errorMessage,
-                    type: 'danger',
-                    duration: 3000,
-                });
+                ToastMess({ type: 'error', text1: 'Người dùng đã tồn tại' })
+
             } else {
-                showMessage({
-                    message: 'Có lỗi xảy ra. Vui lòng thử lại sau.',
-                    type: 'danger',
-                    duration: 3000,
-                });
+                ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
             }
         }
+
 
 
     }
 
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
-                <View style={{ display: isLoading || nullValue ? 'flex' : 'none' }}>
-                    {nullValue && <MessageError message={'Vui lòng nhập đầy đủ thông tin!!'} color={errorMess} tcolor={white} />}
-                </View>
-                <View style={styles.comtainerTitle}>
-                    <Text style={styles.title}>Đăng ký</Text>
-                    <Text style={styles.wellcome}>Xin chào bạn,</Text>
-                    <Text style={styles.wellcome}>Chia sẻ chuyến đi tuyện vời.</Text>
-                </View>
-                <View>
-                    <InputCpm placeholder={'Họ'} onChangeText={(value) => setFirstName(value)} />
-                    <InputCpm placeholder={'Tên'} onChangeText={(value) => setLastName(value)} />
-                    <InputCpm placeholder={'Tên tài khoản'} onChangeText={(value) => setUsername(value)} />
-                    <InputCpm placeholder={'Email'} onChangeText={(value) => setEmail(value)} />
-                    <InputCpm placeholder={'Số điện thoại (+84)'} onChangeText={(value) => setPhone(value)} />
-                    <InputPass placeholder={'Mật khẩu'} onChangeText={(value) => setPassword(value)} />
-                    {avatar ? (
-                        <Image source={{ uri: avatar }} style={styles.imageUpload} />
-                    ) : (
-                        <TouchableOpacity onPress={chooseImage} style={{ width: '100%', height: 50, backgroundColor: borderUnder, borderRadius: 1, alignItems: 'center', justifyContent: 'center', marginTop: 15, borderRadius: 10 }}>
-                            <Text style={{ fontSize: 16 }}>Tải ảnh của bạn</Text>
-                        </TouchableOpacity>
-                    )}
-
-                </View>
-                <View style={styles.buttonContainer}>
-                    {isLoading ? (<ActivityIndicator color={'black'} size={'large'} />) : (
-                        <ButtonMain title={'Đăng ký'} onPress={handeRegister}></ButtonMain>
-                    )}
-                </View>
-                <View style={styles.lineContainer}>
-                    <View style={styles.line}></View>
-                    <Text style={styles.lineText}>hoặc</Text>
-                    <View style={styles.line}></View>
-                </View>
-                <View style={styles.optionLoginContainer}>
-                    <TouchableOpacity>
-                        <Image source={require('../../assets/google.png')} style={styles.optionImage}></Image>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.loginContainer}>
-                    <Text style={styles.forgotPass}>Bạn đã có tài khoản ? </Text>
-                    <TouchableOpacity onPress={goLogin}><Text style={{ fontWeight: '500', color: mainColor }}>Đăng nhập</Text></TouchableOpacity>
-                </View>
+        <View style={styles.container}>
+            <View style={{ display: isLoading || nullValue ? 'flex' : 'none' }}>
+                {nullValue && ToastMess({ type: 'error', text1: 'Vui lòng nhập đầy đủ thông tin' })}
             </View>
-        </ScrollView>
+            <View style={styles.comtainerTitle}>
+                <Text style={styles.title}>Đăng ký</Text>
+                <Text style={styles.wellcome}>Xin chào bạn,</Text>
+                <Text style={styles.wellcome}>Chia sẻ chuyến đi tuyện vời.</Text>
+            </View>
+            <View>
+                <InputCpm placeholder={'Họ'} onChangeText={(value) => setFirstName(value)} />
+                <InputCpm placeholder={'Tên'} onChangeText={(value) => setLastName(value)} />
+                <InputCpm placeholder={'Tên tài khoản'} onChangeText={(value) => setUsername(value)} />
+                <InputCpm placeholder={'Email'} onChangeText={(value) => setEmail(value)} />
+                <InputCpm placeholder={'Số điện thoại (+84)'} onChangeText={(value) => setPhone(value)} />
+                <InputPass placeholder={'Mật khẩu'} onChangeText={(value) => setPassword(value)} />
+                {avatar ? (
+                    <Image source={{ uri: avatar }} style={styles.imageUpload} />
+                ) : (
+                    <TouchableOpacity onPress={chooseImage} style={{ width: '100%', height: 50, backgroundColor: borderUnder, borderRadius: 1, alignItems: 'center', justifyContent: 'center', marginTop: 15, borderRadius: 10 }}>
+                        <Text style={{ fontSize: 16 }}>Tải ảnh của bạn</Text>
+                    </TouchableOpacity>
+                )}
+
+            </View>
+            <View style={styles.buttonContainer}>
+                {isLoading ? (<ActivityIndicator color={'black'} size={'large'} style={HomeStyle.styleLoading} />) : (
+                    <ButtonMain title={'Đăng ký'} onPress={handeRegister}></ButtonMain>
+                )}
+            </View>
+            <View style={styles.lineContainer}>
+                <View style={styles.line}></View>
+                <Text style={styles.lineText}>hoặc</Text>
+                <View style={styles.line}></View>
+            </View>
+            <View style={styles.optionLoginContainer}>
+                <TouchableOpacity>
+                    <Image source={require('../../assets/google.png')} style={styles.optionImage}></Image>
+                </TouchableOpacity>
+            </View>
+            <View style={styles.loginContainer}>
+                <Text style={styles.forgotPass}>Bạn đã có tài khoản ? </Text>
+                <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}><Text style={{ fontWeight: '500', color: mainColor }}>Đăng nhập</Text></TouchableOpacity>
+            </View>
+        </View>
     )
 }
 
+export default RegisterScreen
+
 const styles = StyleSheet.create({
     container: {
-        marginTop: 20,
+        marginTop: 10,
         paddingHorizontal: 30,
         flex: 1
     },
     comtainerTitle: {
         marginBottom: 10,
-        marginTop: 50
+        marginTop: 40
     },
     title: {
         fontSize: 25,
@@ -186,7 +172,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'center', alignItems: 'center',
         marginTop: 20,
-        marginBottom:30
+        marginBottom: 30
     },
     imageUpload: {
         marginTop: 15,

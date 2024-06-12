@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "891379475355",
+    "firebase_url": "https://speedy-equator-420409-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "speedy-equator-420409",
+    "storage_bucket": "speedy-equator-420409.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:891379475355:android:06af9b7586e19a02f4f73e",
+        "android_client_info": {
+          "package_name": "com.journeymanage"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMesfJelEW47aGDrCiIw8Dj2Vr6ieYoGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

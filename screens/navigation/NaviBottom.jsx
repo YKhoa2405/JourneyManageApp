@@ -3,6 +3,8 @@ import { Image } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { Badge } from "react-native-paper";
+
 // screens
 import ProfileScreen from "../Profile/Profile";
 import NotificationScreen from "../Notifi/Notification";
@@ -11,20 +13,55 @@ import MyContext from "../../config/MyContext";
 import UserReducer from "../../reducer/UserReducer";
 import AddJourney from "../Journey/AddJourney";
 import HomeScreen from "../Home/Home";
-import LoginScreen from "../SignInAndUp/Login";
-import { mainColor } from "../../assets/color";
+import { black, mainColor } from "../../assets/color";
 import { createStackNavigator } from "@react-navigation/stack";
 import MyJourney from "../Journey/MyJourney";
-import JourneyDetail, { EditPost } from "../Journey/JourneyDetail";
+import JourneyDetail from "../Journey/JourneyDetail";
 import EditProfile from "../Profile/EditProfile";
 import Toast from "react-native-toast-message";
 import CommentScreen from "../Journey/Comment";
 import AddPost from "../Journey/AddPost";
 import MessageDetail from "../Message/MessageDetail";
+import CommentJourneyScreen from "../Home/CommentJourney";
+import MapSearch from "../Journey/MapSearch";
+import ProfileUserScreen from "../Profile/ProfileUser";
+import RegisterScreen from "../SignInAndUp/Register";
+import LoginScreen from "../SignInAndUp/Login";
+import ListMember from "../Journey/ListMember";
+import MapMember from "../Journey/MapMember";
+import EditPost from "../Journey/EditPost";
+
 
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+const openConfig = {
+  animation: 'spring',
+  config: {
+    stiffness: 1000,
+    damping: 50,
+    mass: 1,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 0.01,
+    duration: 500,
+  },
+};
+
+const closeConfig = {
+  animation: 'spring',
+  config: {
+    stiffness: 1000,
+    damping: 50,
+    mass: 1,
+    duration: 500,
+    overshootClamping: false,
+    restDisplacementThreshold: 0.01,
+    restSpeedThreshold: 0.01,
+  },
+};
+
 
 export default function NaviBottom() {
   const [user, dispatch] = useReducer(UserReducer, null)
@@ -46,6 +83,7 @@ export default function NaviBottom() {
               }
               else if (route.name === "Thông báo") {
                 iconName = focused ? "notifications" : "notifications"
+                { 5 > 0 && <Badge style={{ position: 'absolute', bottom: 25, right: 23 }} size={16}>{5}</Badge> }
               }
               else if (route.name === "Nhắn tin") {
                 iconName = focused ? "chatbubbles-outline" : "chatbubbles-outline"
@@ -58,17 +96,17 @@ export default function NaviBottom() {
                   <Image source={{ uri: user.avatar }} style={{ width: 26, height: 26, borderRadius: 50, borderWidth: 1, borderColor: mainColor, resizeMode: 'cover' }} />
                 )
               }
-              return <Icon name={iconName} size={26} color={color} />;
+              return <Icon name={iconName} size={size} color={focused ? mainColor : color} />;
             },
             tabBarLabel: () => null,
           })}
         >
-          <Tab.Screen name="Trang chủ" component={HomeScreen} options={{ headerShown: false }} />
-          <Tab.Screen name="Nhắn tin" component={MessStackNavigator} options={{headerShown:false}} />
-          <Tab.Screen name="Thêm hành trình" component={AddJourney} options={{ headerShown: false }} />
-          <Tab.Screen name="Thông báo" component={NotificationScreen} />
+          <Tab.Screen name="Trang chủ" component={HomeStackNavigator} options={{ headerShown: false }} />
+          <Tab.Screen name="Nhắn tin" component={MessStackNavigator} options={{ headerShown: false }} />
+          <Tab.Screen name="Thêm hành trình" component={AddJourneyStackNavigator} options={{ headerShown: false }} />
+          <Tab.Screen name="Thông báo" component={NotifiStackNavigator} options={{ headerShown: false }} />
           {user == null ?
-            <Tab.Screen name="Đăng nhập" component={LoginScreen} options={{ headerShown: false }} /> :
+            <Tab.Screen name="Đăng nhập" component={LoginStackNavigator} options={{ headerShown: false }} /> :
             <Tab.Screen name="Trang cá nhân" component={ProfileStackNavigator} options={{ headerShown: false }} />}
         </Tab.Navigator>
         <Toast />
@@ -79,25 +117,162 @@ export default function NaviBottom() {
 
 function ProfileStackNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="MyJourney" component={MyJourney} options={{ title: 'Hành trình bạn tham gia' }} />
-      <Stack.Screen name="JourneyDetail" component={JourneyDetail} options={{ title: 'Chi tiết hành trình', headerShown: false }} />
+    <Stack.Navigator
+      screenOptions={{
+        transitionSpec: {
+          open: openConfig,
+          close: closeConfig,
+        },
+        cardStyleInterpolator: ({ current, layouts }) => {
+          return {
+            cardStyle: {
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [layouts.screen.width, 0],
+                  }),
+                },
+              ],
+            },
+          };
+        },
+      }}>
+      <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="MyJourney" component={MyJourney} options={{ headerShown: false }} />
+      <Stack.Screen name="JourneyDetail" component={JourneyDetail} options={{ headerShown: false }} />
       <Stack.Screen name="EditProfile" component={EditProfile} options={{ title: 'Chỉnh sửa thông tin' }} />
       <Stack.Screen name="CommentScreen" component={CommentScreen} options={{ title: 'Bình luận' }} />
-      <Stack.Screen name="EditPost" component={EditPost} options={{ title: 'Chỉnh sử bài đăng' }} />
-      <Stack.Screen name="AddPost" component={AddPost} options={{ title: 'Tạo bài viết' }} />
+      <Stack.Screen name="AddPost" component={AddPost} options={{ title: 'Thêm bài viết' }} />
+      <Stack.Screen name="ProfileUserScreen" component={ProfileUserScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ListMember" component={ListMember} options={{ headerShown: false }} />
+      {/* <Stack.Screen name="ListFollow" component={ListFollow} options={{ headerShown: false }} /> */}
+      <Stack.Screen name="MapMember" component={MapMember} options={{ headerShown: false }} />
+      <Stack.Screen name="EditPost" component={EditPost} options={{ title: 'Chỉnh sửa bài viết ' }} />
+
+
     </Stack.Navigator>
   );
 }
 
 function MessStackNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen name="MessengerScreen" component={MessengerScreen} options={{ headerShown: false }} />
-        <Stack.Screen name="MessageDetail" component={MessageDetail}  options={{ headerShown: false }}/>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        transitionSpec: {
+          open: openConfig,
+          close: closeConfig,
+        },
+        cardStyleInterpolator: ({ current, layouts }) => {
+          return {
+            cardStyle: {
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [layouts.screen.width, 0],
+                  }),
+                },
+              ],
+            },
+          };
+        },
+      }}
+    >
+      <Stack.Screen name="MessengerScreen" component={MessengerScreen} />
+      <Stack.Screen name="MessageDetail" component={MessageDetail} />
     </Stack.Navigator>
-  )
+  );
 }
 
+function HomeStackNavigator() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        transitionSpec: {
+          open: openConfig,
+          close: closeConfig,
+        },
+        cardStyleInterpolator: ({ current, layouts }) => {
+          return {
+            cardStyle: {
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [layouts.screen.width, 0],
+                  }),
+                },
+              ],
+            },
+          };
+        },
+        headerShown: false, // Tất cả các màn hình không hiển thị header
+      }}
+    >
+      <Stack.Screen name="HomeScreen" component={HomeScreen} />
+      <Stack.Screen name="CommentJourneyScreen" component={CommentJourneyScreen} />
+      <Stack.Screen name="ProfileUserScreen" component={ProfileUserScreen} />
+      <Stack.Screen name="JourneyDetail" component={JourneyDetail} />
+      <Stack.Screen name="MessageDetail" component={MessageDetail} />
+      <Stack.Screen name="LoginScreen" component={LoginScreen} />
+    </Stack.Navigator>
+  );
+}
+
+
+function AddJourneyStackNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="AddJourney" component={AddJourney} options={{ headerShown: false }} />
+      <Stack.Screen name="MapSearch" component={MapSearch} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
+function LoginStackNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="LoginScreen" component={LoginScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="RegisterScreen" component={RegisterScreen} options={{ headerShown: false }} />
+    </Stack.Navigator>
+  );
+}
+
+function NotifiStackNavigator() {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        transitionSpec: {
+          open: openConfig,
+          close: closeConfig,
+        },
+        cardStyleInterpolator: ({ current, layouts }) => {
+          return {
+            cardStyle: {
+              transform: [
+                {
+                  translateX: current.progress.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [layouts.screen.width, 0],
+                  }),
+                },
+              ],
+            },
+          };
+        },
+        headerShown: false, // Tất cả các màn hình không hiển thị header
+      }}
+    >
+      <Stack.Screen name="NotificationScreen" component={NotificationScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="ProfileUserScreen" component={ProfileUserScreen} options={{ headerShown: false }} />
+      <Stack.Screen name="JourneyDetail" component={JourneyDetail} options={{ headerShown: false }} />
+      <Stack.Screen name="CommentJourneyScreen" component={CommentJourneyScreen} />
+
+
+
+    </Stack.Navigator>
+  );
+}
 
