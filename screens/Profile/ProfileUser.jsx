@@ -53,7 +53,6 @@ const ProfileUserScreen = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(true);
     const [openModel, setOpenModel] = useState(false);
     const [report, setReport] = useState("");
-    const [user, dispatch] = useContext(MyContext);
 
     useEffect(() => {
         const loadProfileData = async () => {
@@ -66,7 +65,9 @@ const ProfileUserScreen = ({ navigation, route }) => {
 
     const loadProfileUser = async () => {
         try {
-            const response = await API.get(endpoints["user_profile"](userId));
+            const token = await AsyncStorage.getItem("access-token")
+
+            const response = await authApi(token).get(endpoints["user_profile"](userId));
             setMyUser(response.data);
             console.log(response.data)
         } catch (error) {
@@ -101,7 +102,6 @@ const ProfileUserScreen = ({ navigation, route }) => {
                     onPress: async () => {
                         try {
                             const token = await AsyncStorage.getItem("access-token");
-                            console.log(token);
                             await authApi(token).post(endpoints["report_user"], {
                                 reported_user_id: userId,
                                 reason: report
@@ -129,9 +129,8 @@ const ProfileUserScreen = ({ navigation, route }) => {
     const handleFollow = async () => {
         try {
             const token = await AsyncStorage.getItem("access-token");
-            console.log(token)
             await authApi(token).post(endpoints["follow"](userId));
-            ToastMess({ type: "success", text1: "Theo dõi thành công" });
+            loadProfileUser()
         } catch (error) {
             console.error(error);
         }
@@ -152,22 +151,22 @@ const ProfileUserScreen = ({ navigation, route }) => {
                         </Text>
                         <Text style={{ fontWeight: "bold", fontSize: txt16 }}>
                             {item.start_location.length > 30
-                                ? item.start_location.split(" ").slice(0, 4).join(" ") + "..."
+                                ? item.start_location.split(" ").slice(0, 3).join(" ") + "..."
                                 : item.start_location}
                         </Text>
                         <Text style={{ fontWeight: "bold", fontSize: txt16 }}>
                             {item.end_location.length > 30
-                                ? item.end_location.split(" ").slice(0, 4).join(" ") + "..."
+                                ? item.end_location.split(" ").slice(0, 3).join(" ") + "..."
                                 : item.end_location}
                         </Text>
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         <Icon name="star" color={"gold"} size={24}></Icon>
-                        <Text style={HomeStyle.text}>Điểm</Text>
+                        <Text style={{fontWeight:'bold'}}>{item.average_rating}</Text>
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         {item.active == false ? (
-                            <Text style={{ fontWeight: "bold", fontSize: txt16 }}>Hoàn thành </Text>
+                            <Text style={{ fontWeight: "bold", fontSize: txt16,color:mainColor }}>Hoàn thành </Text>
                         ) : (
                             <Text style={{ fontWeight: "bold", fontSize: txt16 }}>Đang diễn ra </Text>
                         )}
@@ -240,12 +239,12 @@ const ProfileUserScreen = ({ navigation, route }) => {
                             <Text style={styles.lableTop}>10</Text>
                             <Text>hành trình</Text>
                         </View>
-                        <TouchableOpacity style={styles.headerItem}>
-                            <Text style={styles.lableTop}>10</Text>
+                        <TouchableOpacity style={styles.headerItem} onPress={() => navigation.navigate('FollowList', { userID: userId, isFollow: 'followers',follow_count:myUser.follower_count })}>
+                            <Text style={styles.lableTop}>{myUser.follower_count}</Text>
                             <Text>người theo dõi</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.headerItem} >
-                            <Text style={styles.lableTop}>10</Text>
+                        <TouchableOpacity style={styles.headerItem} onPress={() => navigation.navigate('FollowList', { userID: userId, isFollow: 'following',follow_count:myUser.following_count })}>
+                            <Text style={styles.lableTop}>{myUser.following_count}</Text>
                             <Text>đang theo dõi</Text>
                         </TouchableOpacity>
                     </View>
@@ -254,11 +253,11 @@ const ProfileUserScreen = ({ navigation, route }) => {
                     </View>
                     <View style={ProfileStyle.fullnameStar}>
                         <Text style={{ opacity: 0.7 }}>Đánh giá: </Text>
-                        <Text style={{ fontWeight: "400", marginRight: 2 }}>5</Text>
+                        <Text style={{ fontWeight: "400", marginRight: 2 }}>{myUser.rate}</Text>
                         <Icon name="star" size={20} color={"gold"} />
                     </View>
                     <View style={styles.header}>
-                        <TouchableOpacity style={[styles.buttonFollow, { backgroundColor: myUser.followed ? null : mainColor }]} onPress={() => handleFollow(myUser.id)}>
+                        <TouchableOpacity style={[styles.buttonFollow, { backgroundColor: myUser.followed ? borderUnder : mainColor }]} onPress={() => handleFollow(myUser.id)}>
                             <Text style={[styles.lableButton, { color: myUser.followed ? null : white }]}>
                                 {myUser.followed ? 'Đang theo dõi' : 'Theo dõi'}
                             </Text>
@@ -323,10 +322,10 @@ const styles = StyleSheet.create({
         fontSize: txt16
     },
     buttonFollow: {
-        paddingHorizontal: 55,
+        paddingHorizontal: 50,
         paddingVertical: 8,
         borderRadius: 10,
-        backgroundColor:borderUnder
+        backgroundColor: borderUnder
     },
     lableButton: {
         fontSize: 16,

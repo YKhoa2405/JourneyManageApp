@@ -1,7 +1,6 @@
-
-import UIHeader from './screens/components/UIHeader';
 import NaviBottom from './screens/navigation/NaviBottom';
 
+import React from 'react';
 
 export default function App() {
   return (

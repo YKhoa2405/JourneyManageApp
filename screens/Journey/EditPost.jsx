@@ -109,7 +109,7 @@ const EditPost = ({ route, navigation }) => {
                     data={imageVisit}
                     keyExtractor={(item, index) => (item && item.id) ? item.id.toString() : index.toString()}
                     renderItem={({ item }) => (
-                        <Image source={{ uri: item }} style={JourneyStyle.imagePost} />
+                        <Image source={{ uri: item }} style={imageVisit.length === 1 ? JourneyStyle.singleImagePost : JourneyStyle.imagePost} />
                     )}
                 />
 

@@ -9,19 +9,47 @@ import MyContext from "../../config/MyContext";
 import API, { authApi, endpoints } from "../../config/API";
 import { ActivityIndicator } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
-
-
+import { client_id } from "../../config/GOOGLE_API_KEY";
 const LoginScreen = ({ navigation }) => {
 
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [user, dispatch] = useContext(MyContext)
-    
+
 
     const [loading, setLoading] = useState(false);
 
 
+    // useEffect(() => {
+    //     GoogleSignin.configure({
+    //         webClientId: client_id,
+    //         offlineAccess: false, // whether to access Google API when the user is not logged in
+    //         forceCodeForRefreshToken: true, // recommended for iOS
+    //     });
+    // }, []);
+
+    // const signInGoogle = async () => {
+    //     try {
+    //         await GoogleSignin.hasPlayServices();
+    //         const userInfo = await GoogleSignin.signIn();
+    //         // userInfo contains user data
+    //         console.log(userInfo);
+    //     } catch (error) {
+    //         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+    //             // user cancelled the login flow
+    //             console.log('Google login cancelled');
+    //         } else if (error.code === statusCodes.IN_PROGRESS) {
+    //             // operation (e.g. sign in) is in progress already
+    //             console.log('Google login is already in progress');
+    //         } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+    //             // play services not available or outdated
+    //             console.log('Google play services are not available or outdated');
+    //         } else {
+    //             // some other error happened
+    //             console.error('Google login error', error);
+    //         }
+    //     }
+    // };
 
     // Xử lý đăng nhập
     const handleLogin = async () => {
@@ -50,12 +78,7 @@ const LoginScreen = ({ navigation }) => {
         } catch (error) {
 
             if (error.response && error.response.status === 400) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Thông tin hoặc mật khẩu không chính xác',
-                    visibilityTime: 4000, // Thời gian tồn tại của toast (milliseconds)
-                    autoHide: true, // Tự động ẩn toast sau khi hết thời gian tồn tại
-                });
+                ToastMess({ type: 'error', text1: 'Thông tin tài khoản hoặc mật khẩu không chính xác' })
             }
         } finally {
             setLoading(false);
@@ -95,7 +118,7 @@ const LoginScreen = ({ navigation }) => {
                 <View style={LoginStyle.line}></View>
             </View>
             <View style={LoginStyle.optionLoginContainer}>
-                <TouchableOpacity>
+                <TouchableOpacity >
                     <Image source={require('../../assets/google.png')} style={LoginStyle.optionImage}></Image>
                 </TouchableOpacity>
             </View>

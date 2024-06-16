@@ -1,28 +1,24 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
-import React, { useContext, useEffect, useRef, useState, useCallback } from "react";
-import { View, Text, Image, ActivityIndicator, Alert, Button, TextInput, FlatList, Dimensions, TouchableWithoutFeedback, Modal, SafeAreaView } from "react-native";
+import React, { useContext, useEffect, useState, useCallback } from "react";
+import { View, Text, Image, ActivityIndicator, Alert, FlatList, TouchableWithoutFeedback, Modal, SafeAreaView, RefreshControl } from "react-native";
 import JourneyStyle from "./JourneyStyle";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import MapView, { Marker } from "react-native-maps";
 import API, { authApi, endpoints } from "../../config/API";
 import { Avatar } from "react-native-paper";
-import { black, borderUnder, mainColor, textWeight, transparent, txt20, white } from "../../assets/color";
+import { black, mainColor, textWeight, transparent, txt20, white } from "../../assets/color";
 import moment from "moment";
 import 'moment/locale/vi';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MyContext from "../../config/MyContext";
 import { ToastMess } from "../components/ToastMess";
-import UIHeader from "../components/UIHeader";
 import { useFocusEffect } from "@react-navigation/native";
 import HomeStyle from "../../styles/HomeStyle";
 import ButtonMain from "../components/ButtonMain";
 import { AirbnbRating } from "react-native-ratings";
 
 
-const JourneyDetail = ({ route, navigation }) => {
-    const windowWidth = Dimensions.get('window').width
 
+const JourneyDetail = ({ route, navigation }) => {
     const [user, dispatch] = useContext(MyContext)
     const { journeyID, userID } = route.params;
     const isOwner = user.id === userID;
@@ -35,21 +31,42 @@ const JourneyDetail = ({ route, navigation }) => {
     const [rating, setRating] = useState(0);
     const [isLoading, setIsLoading] = useState(true)
 
+
+    const dataFromScreen1 = { journeyDetailData: journeyDetailData };
     moment.locale('vi');
 
+    const loadData = useCallback(async () => {
+        setIsLoading(true);
+        await loadPost();
+        await handleLike();
+        await loadMember();
+        await loadJourneyDetail();
+        setIsLoading(false);
+    }, []);
 
     useEffect(() => {
-        loadPost();
-        handleLike();
-        loadMember();
-        loadJourneyDetail().then(() => setIsLoading(false))
-    }, [])
+        loadData();
+    }, [loadData]);
 
     useFocusEffect(
         useCallback(() => {
-            loadPost()
-        }, [])
+            loadData();
+        }, [loadData])
     );
+
+    const handleRating = async () => {
+        console.log(rating)
+        try {
+            let token = await AsyncStorage.getItem('access-token');
+            await authApi(token).post(endpoints['rating_journey'](journeyID), {
+                rating: rating
+            })
+            ToastMess({ type: 'success', text1: 'Đánh giá thành công' })
+            setOpenModel(false)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const renderModel = () => {
         return (
@@ -65,7 +82,7 @@ const JourneyDetail = ({ route, navigation }) => {
                             <Icon.Button
                                 size={24}
                                 name="close"
-                                backgroundColor="white"
+                                backgroundColor='white'
                                 color="red"
                                 onPress={() => setOpenModel(false)} />
                         </View>
@@ -74,6 +91,7 @@ const JourneyDetail = ({ route, navigation }) => {
 
                                 <ButtonMain title={'Hoàn thành hành trình'} onPress={() => handleLockJourney()} />
                                 <ButtonMain title={'Khóa bình luận'} onPress={() => handleLockComment()} />
+                                <ButtonMain title={'Chỉnh sửa hành trình'} onPress={() => handleEditJourney()} />
                                 <ButtonMain title={'Xóa hành trình'} onPress={() => handleDeleteJourney()} />
                             </> : <>
                                 <AirbnbRating count={5}
@@ -82,7 +100,7 @@ const JourneyDetail = ({ route, navigation }) => {
                                     reviewColor="gold"
                                     size={40}
                                     reviewSize={22}
-                                    defaultRating={5}
+                                    defaultRating={0}
                                     ratingContainerStyle={JourneyStyle.ratingStyle}
                                     onFinishRating={(rating) => setRating(rating)} />
 
@@ -96,9 +114,6 @@ const JourneyDetail = ({ route, navigation }) => {
         )
     }
 
-    const handleRating = () => {
-        console.log(rating)
-    }
 
     const goToProfileUser = (id) => {
         if (id == user.id) {
@@ -114,6 +129,7 @@ const JourneyDetail = ({ route, navigation }) => {
         try {
             const res = await API.get(endpoints['member_journey'](journeyID))
             setMember(res.data)
+            console.log(res.data)
         } catch (error) {
             console.log(error)
         }
@@ -151,6 +167,10 @@ const JourneyDetail = ({ route, navigation }) => {
         );
     };
 
+    const handleEditJourney = () => {
+        navigation.navigate('EditJourney', { dataFromScreen1 })
+    }
+
     const handleDeletePost = async (postID) => {
         Alert.alert(
             'Xóa bài đăng?',
@@ -168,7 +188,6 @@ const JourneyDetail = ({ route, navigation }) => {
                             let token = await AsyncStorage.getItem('access-token');
                             await authApi(token).delete(endpoints['del_post'](postID));
                             ToastMess({ type: 'success', text1: 'Xóa thành công' })
-
                             loadPost()
                         } catch (error) {
                             ToastMess({ type: 'error', text1: 'Có lỗi xảy ra!!' })
@@ -229,13 +248,13 @@ const JourneyDetail = ({ route, navigation }) => {
 
         }
     }
-
     //api load post
     const loadPost = async () => {
         try {
             const token = await AsyncStorage.getItem('access-token');
             const res = await authApi(token).get(endpoints['post'](journeyID))
             const post = res.data
+            console.log(post)
             setPost(post)
             const newLikeState = {}
             post.forEach(post => {
@@ -307,13 +326,22 @@ const JourneyDetail = ({ route, navigation }) => {
                             <TouchableOpacity style={[JourneyStyle.floadTingButton, { left: 20 }]} onPress={() => navigation.goBack()}>
                                 <Icon name="arrow-left" size={24} color={white} />
                             </TouchableOpacity>
-
-                            <TouchableOpacity style={[JourneyStyle.floadTingButton, { right: 20 }]} onPress={() => setOpenModel(true)}>
-                                <Icon name={isOwner ? 'dots-vertical' : 'star'} size={24} color={white} />
-                            </TouchableOpacity>
+                            {journeyDetailData?.active === false && isOwner === false &&
+                                <TouchableOpacity style={[JourneyStyle.floadTingButton, { right: 20 }]} onPress={() => setOpenModel(true)}>
+                                    <Icon name={'star'} size={24} color={white} />
+                                </TouchableOpacity>
+                            }
+                            {isOwner &&
+                                <TouchableOpacity style={[JourneyStyle.floadTingButton, { right: 20 }]} onPress={() => setOpenModel(true)}>
+                                    <Icon name={'dots-vertical'} size={24} color={white} />
+                                </TouchableOpacity>
+                            }
                             <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: 200 }}>
                                 <Text style={JourneyStyle.headerText}>
                                     {journeyDetailData?.name_journey}
+                                </Text>
+                                <Text style={JourneyStyle.headerText}>
+                                    {journeyDetailData?.departure_time}
                                 </Text>
                             </View>
                         </View>
@@ -367,7 +395,7 @@ const JourneyDetail = ({ route, navigation }) => {
                                         data={c.images}
                                         keyExtractor={(item, index) => index.toString()}
                                         renderItem={({ item }) => (
-                                            <Image source={{ uri: item.image }} style={JourneyStyle.imagePost} />
+                                            <Image source={{ uri: item.image }} style={c.images.length === 1 ? JourneyStyle.singleImagePost : JourneyStyle.imagePost} />
                                         )}
                                     />
                                     <View style={JourneyStyle.postFeeling}>

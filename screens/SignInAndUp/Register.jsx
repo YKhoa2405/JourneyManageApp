@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, Button, ActivityIndicator, ScrollView } from "react-native";
-import { borderUnder, errorMess, mainColor, white } from "../../assets/color";
+import { borderUnder, errorMess, mainColor } from "../../assets/color";
 import ButtonMain from "../components/ButtonMain";
 import InputCpm from "../components/InputCpm";
 import InputPass from "../components/InputPass";

@@ -1,18 +1,16 @@
 import {
     StyleSheet, Text, View, Dimensions, TouchableOpacity, Alert, Animated,
 } from "react-native";
-import React, { useState, useRef } from "react";
-import MapView, { BingMapsProvider, Marker, Polyline, } from "react-native-maps";
+import React, { useState, useRef, useEffect } from "react";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { Searchbar } from 'react-native-paper';
 import { black, borderUnder, mainColor, txt16, white } from "../../assets/color";
+import { GOOGLE_API_KEY } from "../../config/GOOGLE_API_KEY";
 import getDistance from "geolib/es/getPreciseDistance";
 
 const MapSearch = ({ navigation, route }) => {
-    const [animation] = useState(new Animated.Value(400));
     const textInputRef = useRef(null);
-    const API_key =
-        "ArvHYzlNC_zl-qapSPj9KUSjb17DNAmCTHf0Lv-_sWiptCT-R26Ss9wvW5n9ytMr ";
 
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
@@ -31,12 +29,13 @@ const MapSearch = ({ navigation, route }) => {
 
     const [showConfirmButton, setShowConfirmButton] = useState(false);
 
+    const [routePath, setRoutePath] = useState([]); // State to hold route path coordinates
+
     const startCoords = { latitude: latitude, longitude: longitude };
     const endCoords = { latitude: latitude1, longitude: longitude1 };
 
-    const distanceJourney = getDistance(startCoords, endCoords)
-    const distanceFotmat = (distanceJourney / 1000).toString()
-
+    const distanceJourney = getDistance(startCoords, endCoords);
+    const distanceFotmat = (distanceJourney / 1000).toString();
 
     const handleFocus = (type) => {
         if (type === 'start') {
@@ -54,7 +53,6 @@ const MapSearch = ({ navigation, route }) => {
         }
     };
 
-
     const handleFind = async (t, type) => {
         if (type === 'start') {
             setsearchQuery(t);
@@ -62,15 +60,13 @@ const MapSearch = ({ navigation, route }) => {
             setsearching(false);
             try {
                 const response = await fetch(
-                    `https://dev.virtualearth.net/REST/v1/Locations?query=${t}&key=${API_key}`
+                    `https://dev.virtualearth.net/REST/v1/Locations?query=${t}&key=${GOOGLE_API_KEY}`
                 );
                 const data = await response.json();
                 const firstLocation = data.resourceSets[0].resources[0];
                 const newlatitude = firstLocation.point.coordinates[0];
                 const newlongitude = firstLocation.point.coordinates[1];
 
-                // Set new latitude and longitude
-                // This will update the map region
                 setLatitude(newlatitude);
                 setLongitude(newlongitude);
                 setShowConfirmButton(true);
@@ -87,15 +83,13 @@ const MapSearch = ({ navigation, route }) => {
             setsearching1(false);
             try {
                 const response = await fetch(
-                    `https://dev.virtualearth.net/REST/v1/Locations?query=${t}&key=${API_key}`
+                    `https://dev.virtualearth.net/REST/v1/Locations?query=${t}&key=${GOOGLE_API_KEY}`
                 );
                 const data = await response.json();
                 const firstLocation = data.resourceSets[0].resources[0];
                 const newlatitude = firstLocation.point.coordinates[0];
                 const newlongitude = firstLocation.point.coordinates[1];
 
-                // Set new latitude and longitude
-                // This will update the map region
                 setLatitude1(newlatitude);
                 setLongitude1(newlongitude);
                 setShowConfirmButton(true);
@@ -109,7 +103,6 @@ const MapSearch = ({ navigation, route }) => {
         }
     };
 
-
     const handleQuery = async (t, type) => {
         if (type === 'start') {
             setsearchQuery(t);
@@ -119,7 +112,7 @@ const MapSearch = ({ navigation, route }) => {
             }
             try {
                 const response = await fetch(
-                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${API_key}`
+                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${GOOGLE_API_KEY}`
                 );
                 const data = await response.json();
                 const suggestion = data.resourceSets[0].resources[0].value.map(
@@ -137,7 +130,7 @@ const MapSearch = ({ navigation, route }) => {
             }
             try {
                 const response = await fetch(
-                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${API_key}`
+                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${GOOGLE_API_KEY}`
                 );
                 const data = await response.json();
                 const suggestion = data.resourceSets[0].resources[0].value.map(
@@ -150,11 +143,10 @@ const MapSearch = ({ navigation, route }) => {
         }
     };
 
-
     const fetchLocation = async (query) => {
         try {
             const response = await fetch(
-                `https://dev.virtualearth.net/REST/v1/Locations?query=${query}&key=${API_key}`
+                `https://dev.virtualearth.net/REST/v1/Locations?query=${query}&key=${GOOGLE_API_KEY}`
             );
             const data = await response.json();
             return data.resourceSets[0].resources[0].name;
@@ -163,34 +155,66 @@ const MapSearch = ({ navigation, route }) => {
             throw new Error("An error occurred while searching for the location. Please try again later.");
         }
     };
-    // Click check nhận giá trị
+
     const handleConfirmLocation = async () => {
         try {
             const locationName = await fetchLocation(searchQuery);
             const locationName1 = await fetchLocation(searchQuery1);
 
             const previousScreen = route.params?.previousScreen;
+            const dataFromScreen2 = { lat: latitude, lon: longitude, nameLoc: locationName, lat1: latitude1, lon1: longitude1, nameLoc1: locationName1, distanceFotmat: distanceFotmat };
 
-            // Tùy thuộc vào màn hình trước đó, thực hiện điều hướng tương ứng
             switch (previousScreen) {
                 case 'AddJourney':
                     navigation.navigate('AddJourney', { lat: latitude, lon: longitude, nameLoc: locationName, lat1: latitude1, lon1: longitude1, nameLoc1: locationName1, distanceFotmat: distanceFotmat });
                     break;
+                case 'EditJourney':
+                    navigation.navigate('EditJourney', { dataFromScreen2 });
+                    break;
                 default:
-                    navigation.goBack(); // Trường hợp mặc định, quay lại màn hình trước
+                    navigation.goBack();
                     break;
             }
+
+            // Fetch route path after confirming locations
+            await fetchRoutePath(latitude, longitude, latitude1, longitude1);
+
         } catch (error) {
             Alert.alert("Error", error.message);
         }
     };
 
+    const fetchRoutePath = async (startLat, startLon, endLat, endLon) => {
+        try {
+            const response = await fetch(
+                `https://dev.virtualearth.net/REST/v1/Routes/Driving?o=json&wp.0=${startLat},${startLon}&wp.1=${endLat},${endLon}&key=${GOOGLE_API_KEY}`
+            );
+            const data = await response.json();
+            const route = data.resourceSets[0].resources[0].routeLegs[0].itineraryItems;
+            const path = route.map((item) => ({
+                latitude: item.maneuverPoint.coordinates[0],
+                longitude: item.maneuverPoint.coordinates[1],
+            }));
+            setRoutePath(path);
+        } catch (error) {
+            console.error("Error fetching route path:", error);
+            Alert.alert(
+                "Error",
+                "An error occurred while fetching the route path. Please try again later."
+            );
+        }
+    };
+
+    useEffect(() => {
+        if (latitude !== 0 && longitude !== 0 && latitude1 !== 0 && longitude1 !== 0) {
+            fetchRoutePath(latitude, longitude, latitude1, longitude1);
+        }
+    }, [latitude, longitude, latitude1, longitude1]);
+
     return (
         <View style={styles.container}>
-
             <MapView
-                provider={BingMapsProvider}
-                apiKey={API_key}
+                provider={PROVIDER_GOOGLE}
                 style={styles.map}
                 region={{
                     latitude: (latitude + latitude1) / 2,
@@ -216,10 +240,7 @@ const MapSearch = ({ navigation, route }) => {
                     description="Địa điểm bạn sẽ kết thúc hành trình"
                 />
                 <Polyline
-                    coordinates={[
-                        { latitude: latitude, longitude: longitude },
-                        { latitude: latitude1, longitude: longitude1 },
-                    ]}
+                    coordinates={routePath} // Use the route path coordinates
                     strokeWidth={4}
                     strokeColor="blue"
                 />
@@ -276,7 +297,6 @@ const MapSearch = ({ navigation, route }) => {
                         </>
                     )}
                 </View>
-
             </View>
 
             {showConfirmButton && (
@@ -284,7 +304,6 @@ const MapSearch = ({ navigation, route }) => {
                     <Icon name="check" color={white} size={30}></Icon>
                 </TouchableOpacity>
             )}
-
         </View>
     );
 };

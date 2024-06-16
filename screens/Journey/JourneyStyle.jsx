@@ -1,6 +1,6 @@
 import React from "react";
 import { Dimensions, StyleSheet } from "react-native";
-import { borderUnder, white, black, mainColor, txt18, txt16, txt22, item, txt20, textWeight, txt24 } from "../../assets/color";
+import { borderUnder, white, black, mainColor, txt18, txt16, textWeight, txt24 } from "../../assets/color";
 const { width } = Dimensions.get('window');
 const itemWidth = (width / 2);
 const windowWidth = Dimensions.get('window').width
@@ -101,11 +101,11 @@ const JourneyStyle = StyleSheet.create({
     },
     userJourney: {
         flexDirection: 'row',
-        alignItems: 'center',
-
+        alignItems: 'center'
     },
     emptyList: {
         fontSize: txt16,
+        fontWeight: textWeight,
     },
 
     // journey Detail
@@ -119,16 +119,16 @@ const JourneyStyle = StyleSheet.create({
         bottom: 20,
         right: 20,
     },
-    headerText:{
-        fontWeight:'bold',
-        fontSize:txt24,
-        color:white
+    headerText: {
+        fontWeight: 'bold',
+        fontSize: txt24,
+        color: white
     },
     floadTingButton: {
         position: 'absolute',
         top: 30,
         backgroundColor: borderUnder,
-        padding: 5,
+        padding: 3,
         backgroundColor: mainColor,
         borderRadius: 10,
         zIndex: 1
@@ -242,21 +242,21 @@ const JourneyStyle = StyleSheet.create({
         borderRadius: 20,
         flex: 1
     },
-    viewCommentRep:{
+    viewCommentRep: {
         flexDirection: 'row',
         alignItems: 'center',
         marginTop: 10,
         marginHorizontal: 8,
         justifyContent: 'space-between',
         flex: 1,
-        marginLeft:10
+        marginLeft: 10
     },
-    contentCommentRep:{
+    contentCommentRep: {
 
     },
     listMember: {
-        marginBottom:20,
-        marginTop:10,
+        marginBottom: 20,
+        marginTop: 10,
         marginHorizontal: 16,
         flex: 1,
         flexDirection: 'row',
@@ -297,20 +297,24 @@ const JourneyStyle = StyleSheet.create({
     headerImage: {
         width: '100%', height: 280, resizeMode: 'cover'
     },
-    imagePost:{
-        width: windowWidth - 30,
-        height: 460,
+    imagePost: {
+        width: windowWidth - 80,
+        height: 380,
         resizeMode: 'cover',
         borderRadius: 20,
-        borderWidth: 1,
-        borderColor: borderUnder,
-        marginHorizontal:5,
+        marginHorizontal: 5,
+    },
+    singleImagePost: {
+        width: windowWidth,
+        height: 420,
+        resizeMode: 'cover',
+        borderRadius: 20,
     }
-    ,deleteImagePost:{
-        position:'absolute',
-        top:10,
-        right:20,
-        zIndex:1
+    , deleteImagePost: {
+        position: 'absolute',
+        top: 10,
+        right: 20,
+        zIndex: 1
     }
 
 

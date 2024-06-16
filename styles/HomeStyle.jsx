@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native"
-import { black, borderUnder, item, mainColor } from "../assets/color"
+import { black, borderUnder, item, mainColor, white } from "../assets/color"
 
 const HomeStyle = StyleSheet.create({
     container: {

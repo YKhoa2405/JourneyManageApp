@@ -30,6 +30,8 @@ import LoginScreen from "../SignInAndUp/Login";
 import ListMember from "../Journey/ListMember";
 import MapMember from "../Journey/MapMember";
 import EditPost from "../Journey/EditPost";
+import FollowList from "../Profile/FollowList";
+import EditJourney from "../Journey/EditJourney";
 
 
 
@@ -139,16 +141,18 @@ function ProfileStackNavigator() {
         },
       }}>
       <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }} />
-      <Stack.Screen name="MyJourney" component={MyJourney} options={{ headerShown: false }} />
+      <Stack.Screen name="MyJourney" component={MyJourney} options={{ headerShown: false}} />
       <Stack.Screen name="JourneyDetail" component={JourneyDetail} options={{ headerShown: false }} />
       <Stack.Screen name="EditProfile" component={EditProfile} options={{ title: 'Chỉnh sửa thông tin' }} />
-      <Stack.Screen name="CommentScreen" component={CommentScreen} options={{ title: 'Bình luận' }} />
+      <Stack.Screen name="CommentScreen" component={CommentScreen} options={{ title: 'Bình luận',tabBarStyle: { display: 'none' } }} />
       <Stack.Screen name="AddPost" component={AddPost} options={{ title: 'Thêm bài viết' }} />
       <Stack.Screen name="ProfileUserScreen" component={ProfileUserScreen} options={{ headerShown: false }} />
       <Stack.Screen name="ListMember" component={ListMember} options={{ headerShown: false }} />
-      {/* <Stack.Screen name="ListFollow" component={ListFollow} options={{ headerShown: false }} /> */}
       <Stack.Screen name="MapMember" component={MapMember} options={{ headerShown: false }} />
-      <Stack.Screen name="EditPost" component={EditPost} options={{ title: 'Chỉnh sửa bài viết ' }} />
+      <Stack.Screen name="EditJourney" component={EditJourney} options={{ title: 'Chỉnh sửa hành trình ' }} />
+      <Stack.Screen name="MapSearch" component={MapSearch} options={{ headerShown: false }} />
+      <Stack.Screen name="EditPost" component={EditPost} options={{ title: 'Chỉnh sửa bài viết' }} />
+      <Stack.Screen name="FollowList" component={FollowList} options={{ headerShown: false }} />
 
 
     </Stack.Navigator>
@@ -217,6 +221,10 @@ function HomeStackNavigator() {
       <Stack.Screen name="JourneyDetail" component={JourneyDetail} />
       <Stack.Screen name="MessageDetail" component={MessageDetail} />
       <Stack.Screen name="LoginScreen" component={LoginScreen} />
+      <Stack.Screen name="FollowList" component={FollowList} />
+
+
+
     </Stack.Navigator>
   );
 }

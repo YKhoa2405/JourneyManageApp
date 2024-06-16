@@ -31,6 +31,7 @@ export const endpoints = {
     'reply_comment': (journeyID) => `/journey/${journeyID}/comment_reply/`,
     'user_journeys': `/user_journeys/`,
     'detail_journey': (journeyID) => `/journey/${journeyID}/`,
+    'rating_journey':(journeyID)=>`/journey/${journeyID}/rate_journey/`,
 
 
     // post
@@ -50,9 +51,6 @@ export const endpoints = {
     'member_journey': (journeyID) => `/journey/${journeyID}/members/`,
     'member_delete': (journeyID) => `/journey/${journeyID}//delete_participant/`,
 
-    //notifition
-    'get_notifi': `/notifications/`,
-    'read_notifi': (notifiID) => `/notifications/${notifiID}/mark_as_read/`
 
 
 }

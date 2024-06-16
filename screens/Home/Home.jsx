@@ -4,12 +4,10 @@ import HomeStyle from "../../styles/HomeStyle";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SearchCpm from "../components/SearchCpm";
 import axios from "axios";
-import { black, item, mainColor } from "../../assets/color";
-import ButtonMain from "../components/ButtonMain";
+import { black, item, mainColor, txt16 } from "../../assets/color";
 import { Avatar } from "react-native-paper";
 import MyContext from "../../config/MyContext";
 import API, { authApi, endpoints } from "../../config/API";
-import moment from "moment";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -38,8 +36,6 @@ const HomeScreen = ({ navigation }) => {
     const handleLike = async (journeyID) => {
         try {
             const token = await AsyncStorage.getItem("access-token")
-            console.log(token)
-
             const res = await authApi(token).post(endpoints['like_journey'](journeyID))
 
             setLikedState(prevLikedState => ({ ...prevLikedState, [journeyID]: true }));
@@ -63,8 +59,8 @@ const HomeScreen = ({ navigation }) => {
         try {
             const token = await AsyncStorage.getItem("access-token")
             const res = await authApi(token).get(endpoints['get_journey']);
+            console.log(token)
             let journey = res.data.results
-            console.log(journey)
             journey = journey.filter(j => j.active);
             setDataJourney(journey)
 
@@ -107,6 +103,13 @@ const HomeScreen = ({ navigation }) => {
         }
     };
 
+    const truncate = (text, maxLength) => {
+        if (text.length > maxLength) {
+            return text.slice(0, maxLength) + '...';
+        }
+        return text;
+    };
+
     const renderJourneyItem = ({ item }) => {
         return (
             <View style={HomeStyle.containerItemHome} key={item.id}>
@@ -129,12 +132,12 @@ const HomeScreen = ({ navigation }) => {
                         <View>
                             <View style={HomeStyle.goStart}>
                                 <Icon name="map-marker" color={mainColor} size={24}></Icon>
-                                <Text style={HomeStyle.text}>{item.start_location}</Text>
+                                <Text style={HomeStyle.text}>{truncate(item.start_location,40)}</Text>
                             </View>
                             <View style={HomeStyle.line}></View>
                             <View style={HomeStyle.goStart}>
                                 <Icon name="map-marker" color={mainColor} size={24}></Icon>
-                                <Text style={HomeStyle.text}>{item.end_location}</Text>
+                                <Text style={HomeStyle.text}>{truncate(item.end_location, 40)}</Text>
                             </View>
                         </View>
                         <View style={{ marginVertical: 6 }}>

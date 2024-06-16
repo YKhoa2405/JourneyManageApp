@@ -1,19 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Pressable, Platform, TextInput, TouchableOpacity, ScrollView, FlatList, ImageBackground, ActivityIndicator } from "react-native";
-import InputCpm from "../components/InputCpm";
-import HomeStyle from "../../styles/HomeStyle";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, Pressable, Platform, TextInput, TouchableOpacity, ImageBackground, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import ButtonMain from "../components/ButtonMain";
-import { ImagesRandom, black, borderUnder, mainColor, txt16, white } from "../../assets/color";
-import MapView from "react-native-maps";
-import GOOGLE_API_KEY from "../../config/GOOGLE_API_KEY";
+import { ImagesRandom, black } from "../../assets/color";
 import JourneyStyle from "./JourneyStyle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import API, { authApi, endpoints } from "../../config/API";
 import moment from "moment";
 import { ToastMess } from "../components/ToastMess";
-import axios from "axios";
 
 export default function AddJourney({ navigation, route }) {
 
@@ -44,7 +39,6 @@ export default function AddJourney({ navigation, route }) {
         }
         if (distanceFotmat) {
             setDistance(distanceFotmat);
-            console.log(distanceFotmat)
         }
         getRandomImage()
     }, [nameLoc, nameLoc1, distance]);
@@ -97,12 +91,10 @@ export default function AddJourney({ navigation, route }) {
         formJourney.append('estimated_time', estimatedTime)
 
         setLoading(true)
-
-        console.log(formJourney)
         try {
             let token = await AsyncStorage.getItem('access-token');
             console.log(token)
-            let res = await authApi(token).post(endpoints['post_journey'], formJourney, {
+            await authApi(token).post(endpoints['post_journey'], formJourney, {
                 headers: {
                     'accept': 'application/json',
                     'Content-Type': 'multipart/form-data',
@@ -125,7 +117,7 @@ export default function AddJourney({ navigation, route }) {
                 ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
             }
         } finally {
-            setLoading(false); // Dừng loading sau khi kết thúc request (thành công hoặc thất bại)
+            setLoading(false);
         }
 
     };

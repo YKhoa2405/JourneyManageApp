@@ -1,19 +1,40 @@
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { black, borderUnder, mainColor, white } from "../../assets/color";
+import { black, borderUnder, mainColor, txt16, white } from "../../assets/color";
 import { Avatar } from "react-native-paper";
 import JourneyStyle from "./JourneyStyle";
 
+const MapMember = ({ route, navigation }) => {
+    const { memberMap } = route.params;
+    const filteredMemberMap = memberMap.filter(item => item.post.latitude !== null && item.post.longitude !== null);
 
-const MapMember = ({ navigation }) => {
-    const [listVisit, setListVisit] = useState([
-        { id: 1, avatar: 'https://res.cloudinary.com/dsbebvfff/image/upload/v1716023980/31191_p73jq8.jpg', longitude: 106.6297, latitude: 10.8231 },
-        { id: 2, avatar: 'https://res.cloudinary.com/dsbebvfff/image/upload/v1716023980/31190_fkeow9.jpg', longitude: 105.8542, latitude: 21.0285 },
-        { id: 3, avatar: 'https://res.cloudinary.com/dsbebvfff/image/upload/v1716023980/31189_lw8abu.jpg', longitude: 108.2772, latitude: 14.0583 },
-    ]);
+    const calculateInitialRegion = (markers) => {
+        if (markers.length === 0) {
+            return {
+                latitude: 0,
+                longitude: 0,
+                latitudeDelta: 100,
+                longitudeDelta: 100,
+            };
+        }
 
+        const latitudes = markers.map(marker => marker.post.latitude);
+        const longitudes = markers.map(marker => marker.post.longitude);
+
+        const averageLatitude = latitudes.reduce((a, b) => a + b, 0) / latitudes.length;
+        const averageLongitude = longitudes.reduce((a, b) => a + b, 0) / longitudes.length;
+
+        return {
+            latitude: averageLatitude,
+            longitude: averageLongitude,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.02,
+        };
+    };
+
+    const initialRegion = calculateInitialRegion(filteredMemberMap);
 
     return (
         <View style={{ flex: 1 }}>
@@ -21,28 +42,31 @@ const MapMember = ({ navigation }) => {
                 <Icon name="arrow-left" size={24} color={white} />
             </TouchableOpacity>
             <View style={styles.containerMap}>
-                <MapView style={styles.map}
-                    initialRegion={{
-                        latitude: 10.8231,          // Vĩ độ trung tâm (ví dụ: Thành phố Hồ Chí Minh, Việt Nam)
-                        longitude: 106.6297,        // Kinh độ trung tâm (ví dụ: Thành phố Hồ Chí Minh, Việt Nam)
-                        latitudeDelta: 0.0922,      // Độ phóng to theo vĩ độ (mức độ chi tiết theo chiều dọc)
-                        longitudeDelta: 0.0421,     // Độ phóng to theo kinh độ (mức độ chi tiết theo chiều ngang)
-                    }} >
-                    {listVisit.map((item) => (
-                        <Marker
-                            key={item.id}
-                            coordinate={{ latitude: item.latitude, longitude: item.longitude }}
-                        >
-                            <Avatar.Image size={32} source={{ uri: item.avatar }} />
-                        </Marker>
-                    ))}
-                </MapView>
+                {filteredMemberMap.length === 0 ? (
+                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>Không có dữ liệu vị trí thành viên.</Text>
+                    </View>
+                ) : (
+                    <MapView
+                        style={styles.map}
+                        initialRegion={initialRegion}
+                    >
+                        {filteredMemberMap.map((item) => (
+                            <Marker
+                                key={item.id}
+                                coordinate={{ latitude: item.post.latitude, longitude: item.post.longitude }}
+                            >
+                                <Avatar.Image size={32} source={{ uri: item.avatar }} />
+                            </Marker>
+                        ))}
+                    </MapView>
+                )}
             </View>
         </View>
-    )
-}
+    );
+};
 
-export default MapMember
+export default MapMember;
 
 const styles = StyleSheet.create({
     containerMap: {
@@ -52,5 +76,11 @@ const styles = StyleSheet.create({
         width: '100%',
         height: "100%",
     },
-
-})
+    noDataText: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        fontSize: 16,
+        color: black,
+    },
+});

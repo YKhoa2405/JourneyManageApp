@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, Alert, SafeAreaView, Modal, ActivityIndicator, FlatList } from "react-native";
 import ProfileStyle from "./ProfileStyle";
 import ItemProfile from "../components/ItemProfile";
@@ -14,6 +14,7 @@ import { Avatar } from "react-native-paper";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import JourneyStyle from "../Journey/JourneyStyle";
 import { black, mainColor, transparent, txt16, txt20, white } from "../../assets/color";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 const ProfileScreen = ({ navigation }) => {
@@ -21,11 +22,13 @@ const ProfileScreen = ({ navigation }) => {
     const [myJourney, setMyJourney] = useState([])
     const [openModel, setOpenModel] = useState(false);
     const [isLoading, setLoading] = useState(true)
+    console.log(user)
 
-
-    useEffect(() => {
-        getMyJourney()
-    }, []);
+    useFocusEffect(
+        useCallback(() => {
+            getMyJourney()
+        }, [user.id])
+    )
     // Logout
     const handleLogout = async () => {
         dispatch({
@@ -122,7 +125,7 @@ const ProfileScreen = ({ navigation }) => {
 
         // Kiểm tra nếu item.id giống với user.id thì hiển thị nội dung
         return (
-            <TouchableOpacity style={[JourneyStyle.itemJourney, { opacity: item.active ? 1 : 0.5 }]} key={item.id}
+            <TouchableOpacity style={JourneyStyle.itemJourney} key={item.id}
                 onPress={() => gotoPost(item.id, user.id)}>
                 <View style={JourneyStyle.itemImage}>
                     <Image source={{ uri: item.background }} style={JourneyStyle.itemImage}></Image>
@@ -135,19 +138,19 @@ const ProfileScreen = ({ navigation }) => {
                         </Text>
 
                         <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>
-                            {item.start_location.length > 20 ? item.start_location.split(' ').slice(0, 4).join(' ') + '...' : item.start_location}
+                            {item.start_location.length > 20 ? item.start_location.split(' ').slice(0, 3).join(' ') + '...' : item.start_location}
                         </Text>
                         <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>
-                            {item.end_location.length > 30 ? item.end_location.split(' ').slice(0, 4).join(' ') + '...' : item.end_location}
+                            {item.end_location.length > 30 ? item.end_location.split(' ').slice(0, 3).join(' ') + '...' : item.end_location}
                         </Text>
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         <Icon name="star" color={'gold'} size={24}></Icon>
-                        <Text style={HomeStyle.text}>Điểm</Text>
+                        <Text style={{fontWeight:'bold',marginLeft:5}}>{item.average_rating}</Text>
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         {item.active == false ? (
-                            <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>Hoàn thành </Text>
+                            <Text style={{ fontWeight: 'bold', fontSize: txt16,color:mainColor }}>Hoàn thành </Text>
 
                         ) : (
                             <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>Đang diễn ra </Text>
@@ -174,14 +177,14 @@ const ProfileScreen = ({ navigation }) => {
                         <Text style={ProfileStyle.lableTop}>10</Text>
                         <Text>hành trình</Text>
                     </View>
-                    <View style={ProfileStyle.headerItem}>
+                    <TouchableOpacity style={ProfileStyle.headerItem} onPress={() => navigation.navigate('FollowList', { userID: user.id, isFollow: 'followers', follow_count: user.follower_count })}>
                         <Text style={ProfileStyle.lableTop}>{user.follower_count}</Text>
                         <Text>người theo dõi</Text>
-                    </View>
-                    <View style={ProfileStyle.headerItem}>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={ProfileStyle.headerItem} onPress={() => navigation.navigate('FollowList', { userID: user.id, isFollow: 'following', follow_count: user.following_count })}>
                         <Text style={ProfileStyle.lableTop}>{user.following_count}</Text>
-                        <Text>đăng theo dõi</Text>
-                    </View>
+                        <Text>đang theo dõi</Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={ProfileStyle.fullnameUser}>
                     <Text style={ProfileStyle.lableFullname}>{user.first_name}</Text>
@@ -191,7 +194,7 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
                 <View style={ProfileStyle.fullnameStar}>
                     <Text style={HomeStyle.text}>Đánh giá: </Text>
-                    <Text style={{ fontWeight: '400', marginRight: 2 }}>5</Text>
+                    <Text style={{ fontWeight: '400', marginRight: 2 }}>{user.rate}</Text>
                     <Icon name="star" size={20} color={"gold"} />
                 </View>
                 <View style={ProfileStyle.profileHeader}>

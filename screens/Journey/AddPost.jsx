@@ -18,7 +18,6 @@ import JourneyStyle from "./JourneyStyle";
 
 
 const AddPost = ({ route, navigation }) => {
-    const windowWidth = Dimensions.get('window').width
     const { journeyID, userID } = route.params;
     const [user, dispatch] = useContext(MyContext)
     const [loading, setLoading] = useState(false)
@@ -26,18 +25,24 @@ const AddPost = ({ route, navigation }) => {
     const [contentPost, setContentPost] = useState('')
     const [imageVisit, setImageVisit] = useState([])
     const [visitPoint, setVisitPoint] = useState(null)
+    const [latitude, setLatitude] = useState(null)
+    const [longitude, setLongitude] = useState(null)
+    console.log(latitude, longitude)
 
     useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
                 setErrorMsg('Permission to access location was denied');
+                navigation.goBack()
                 return;
             }
 
             let currentLocation = await Location.getCurrentPositionAsync({});
 
             const { latitude, longitude } = currentLocation.coords;
+            setLatitude(latitude)
+            setLongitude(longitude)
             const API_key =
                 "ArvHYzlNC_zl-qapSPj9KUSjb17DNAmCTHf0Lv-_sWiptCT-R26Ss9wvW5n9ytMr ";
             const response = await fetch(
@@ -75,6 +80,8 @@ const AddPost = ({ route, navigation }) => {
         formPost.append('journey', journeyID)
         formPost.append('content', contentPost)
         formPost.append('visit_point', visitPoint)
+        formPost.append('latitude', latitude)
+        formPost.append('longitude', longitude)
         if (imageVisit && imageVisit.length > 0) {
             imageVisit.forEach((imageUri, index) => {
                 formPost.append('images', {
@@ -124,11 +131,6 @@ const AddPost = ({ route, navigation }) => {
         }
     }
 
-    const handleDeleteImage = (index) => {
-        setImageVisit(prevImages => prevImages.filter((_, i) => i !== index));
-    };
-
-
     return (
         <View style={postStyles.container}>
             <View style={postStyles.header}>
@@ -162,12 +164,7 @@ const AddPost = ({ route, navigation }) => {
                     data={imageVisit}
                     keyExtractor={(item, index) => index.toString()}
                     renderItem={({ item }) => (
-                        <View>
-                            <Image source={{ uri: item }} style={JourneyStyle.imagePost} />
-                            <TouchableOpacity>
-                                <Icon name="close" size={24} color={'red'} onPress={() => handleDeleteImage(item.id)} />
-                            </TouchableOpacity>
-                        </View>
+                        <Image source={{ uri: item }} style={imageVisit.length === 1 ? JourneyStyle.singleImagePost : JourneyStyle.imagePost} />
                     )}
                 />
 
