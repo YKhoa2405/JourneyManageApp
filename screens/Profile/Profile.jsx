@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import { View, Text, Image, TouchableOpacity, Alert, SafeAreaView, Modal, ActivityIndicator, FlatList } from "react-native";
+import { View, Text, Image, TouchableOpacity, Alert, SafeAreaView, Modal, ActivityIndicator, FlatList, TextInput, ScrollView } from "react-native";
 import ProfileStyle from "./ProfileStyle";
 import ItemProfile from "../components/ItemProfile";
 import HomeStyle from "../../styles/HomeStyle";
@@ -15,13 +15,17 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import JourneyStyle from "../Journey/JourneyStyle";
 import { black, mainColor, transparent, txt16, txt20, white } from "../../assets/color";
 import { useFocusEffect } from "@react-navigation/native";
+import ButtonMain from "../components/ButtonMain";
 
 
 const ProfileScreen = ({ navigation }) => {
     const [user, dispatch] = useContext(MyContext);
+
     const [myJourney, setMyJourney] = useState([])
     const [openModel, setOpenModel] = useState(false);
+    const [openModelChild, setOpenModelChild] = useState(false);
     const [isLoading, setLoading] = useState(true)
+
     console.log(user)
 
     useFocusEffect(
@@ -90,6 +94,11 @@ const ProfileScreen = ({ navigation }) => {
                                 onPress={handleLogout}
                                 backgroundColor={mainColor} />
 
+                            {/* <ItemProfile label={'Đánh giá ứng dụng'}
+                                rightIcon={'star'}
+                                onPress={() => setOpenModelChild(true)}
+                                backgroundColor={mainColor} /> */}
+
                             <ItemProfile label={'Xóa tài khoản'}
                                 rightIcon={'account-off-outline'}
                                 onPress={handleDeleteUser}
@@ -100,18 +109,56 @@ const ProfileScreen = ({ navigation }) => {
             </Modal>
         )
     }
-    console.log(user)
+
+    const renderModelRatingApp = () => {
+        return (
+            <Modal visible={openModelChild} animationType="slide" transparent={true} >
+                <View style={{
+                    flex: 1,
+                    backgroundColor: transparent,
+                    alignItems: "center",
+                    justifyContent: "center"
+                }}>
+
+                    <View style={JourneyStyle.styleModel}>
+                        <View style={JourneyStyle.headerModel}>
+                            <Text style={{
+                                fontWeight: 'bold',
+                                fontSize: txt20
+                            }}>Đánh giá ứng dụng</Text>
+                            <Icon.Button
+                                size={24}
+                                name="close"
+                                backgroundColor="white"
+                                color="red"
+                                onPress={() => setOpenModelChild(false)} />
+                        </View>
+                        <View style={{ marginTop: 20 }}>
+                            <View style={{ marginVertical: 20 }}>
+                                <TextInput
+                                    style={JourneyStyle.InputTime}
+                                    placeholder="Nhập nội dung đánh giá ứng dụng..."
+                                    multiline
+                                />
+                            </View>
+
+                            <View>
+                                <ButtonMain title={"Phản hồi"} />
+                            </View>
+
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+        )
+    }
 
     const getMyJourney = async () => {
         try {
-            const res = await API.get(endpoints['get_journey']);
-            const journey = res.data.results
-
-            const filteredJourney = journey.filter(item => item.user_create.id === user.id);
-            console.log(user.id)
-            setMyJourney(filteredJourney)
+            const res = await API.get(endpoints['user_journey_profile'](user.id));
+            setMyJourney(res.data)
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.log('Error fetching data:', error);
         } finally {
             setLoading(false)
         }
@@ -122,8 +169,6 @@ const ProfileScreen = ({ navigation }) => {
     };
 
     const renderItem = ({ item }) => {
-
-        // Kiểm tra nếu item.id giống với user.id thì hiển thị nội dung
         return (
             <TouchableOpacity style={JourneyStyle.itemJourney} key={item.id}
                 onPress={() => gotoPost(item.id, user.id)}>
@@ -134,7 +179,7 @@ const ProfileScreen = ({ navigation }) => {
                     <View style={JourneyStyle.infoJourney}>
 
                         <Text style={{ fontWeight: 'bold', fontSize: txt16, marginBottom: 10 }}>
-                            {item.name_journey.length > 30 ? item.name_journey.split(' ').slice(0, 4).join(' ') + '...' : item.name_journey}
+                            {item.name_journey.length > 30 ? item.name_journey.split(' ').slice(0, 2).join(' ') + '...' : item.name_journey}
                         </Text>
 
                         <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>
@@ -146,11 +191,11 @@ const ProfileScreen = ({ navigation }) => {
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         <Icon name="star" color={'gold'} size={24}></Icon>
-                        <Text style={{fontWeight:'bold',marginLeft:5}}>{item.average_rating}</Text>
+                        <Text style={{ fontWeight: 'bold', marginLeft: 5 }}>{item.average_rating}</Text>
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         {item.active == false ? (
-                            <Text style={{ fontWeight: 'bold', fontSize: txt16,color:mainColor }}>Hoàn thành </Text>
+                            <Text style={{ fontWeight: 'bold', fontSize: txt16, color: mainColor }}>Hoàn thành </Text>
 
                         ) : (
                             <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>Đang diễn ra </Text>
@@ -163,8 +208,6 @@ const ProfileScreen = ({ navigation }) => {
     };
 
     return (
-
-
         <View style={ProfileStyle.container}>
             <UIHeader title={user.username}
                 leftIcon={''}
@@ -174,7 +217,7 @@ const ProfileScreen = ({ navigation }) => {
                 <View style={ProfileStyle.profileHeader}>
                     <Avatar.Image source={{ uri: user.avatar }} size={70} />
                     <View style={ProfileStyle.headerItem}>
-                        <Text style={ProfileStyle.lableTop}>10</Text>
+                        <Text style={ProfileStyle.lableTop}>{user.journey_count}</Text>
                         <Text>hành trình</Text>
                     </View>
                     <TouchableOpacity style={ProfileStyle.headerItem} onPress={() => navigation.navigate('FollowList', { userID: user.id, isFollow: 'followers', follow_count: user.follower_count })}>
@@ -199,37 +242,33 @@ const ProfileScreen = ({ navigation }) => {
                 </View>
                 <View style={ProfileStyle.profileHeader}>
                     <TouchableOpacity style={[ProfileStyle.buttonFollow, { backgroundColor: mainColor }]} onPress={() => navigation.navigate(MyJourney)}>
-                        <Text style={[ProfileStyle.lableButton, { color: white }]}>Hành trình của tôi</Text>
+                        <Text style={[ProfileStyle.lableButton, { color: white }]}>Hành trình tham gia</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={ProfileStyle.buttonFollow} onPress={() => navigation.navigate(EditProfile)}>
                         <Text style={ProfileStyle.lableButton}>Chỉnh sửa hồ sơ</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={ProfileStyle.contentIcon}>
-                    <Icon name="view-list-outline" size={32} style={{ opacity: 0.8 }}></Icon>
-                </View>
-                <View>
-                    {isLoading ? (
-                        <ActivityIndicator color={black} size='small' />
-                    ) : (
-                        <FlatList
-                            data={myJourney}
-                            renderItem={renderItem}
-                            numColumns={2}
-                            contentContainerStyle={JourneyStyle.flatListContent}
-                            keyExtractor={(item) => item.id.toString()} // Thêm keyExtractor để tránh cảnh báo
-                            ListEmptyComponent={<Text style={JourneyStyle.emptyList}>Không có hành trình nào</Text>} // Hiển thị thông báo khi danh sách trống
-                        />
-                    )}
+                    <Icon name="view-list-outline" size={28} style={{ opacity: 0.8 }}></Icon>
                 </View>
                 <SafeAreaView>
                     {renderModel()}
+                    {renderModelRatingApp()}
                 </SafeAreaView>
             </View>
+            {isLoading ? (
+                <ActivityIndicator color={black} size='small' />
+            ) : (
+                <FlatList
+                    data={myJourney}
+                    renderItem={renderItem}
+                    numColumns={2}
+                    showsVerticalScrollIndicator={false}
+                    keyExtractor={(item) => item.id.toString()} // Thêm keyExtractor để tránh cảnh báo
+                    ListEmptyComponent={<Text style={JourneyStyle.emptyList}>Không có hành trình nào</Text>} // Hiển thị thông báo khi danh sách trống
+                />
+            )}
         </View>
-
-
-
     );
 }
 

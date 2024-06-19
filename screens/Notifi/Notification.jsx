@@ -8,46 +8,47 @@ import UIHeader from "../components/UIHeader";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MyContext from "../../config/MyContext";
 import { firestore } from "../../config/FirebaseConfig";
-import { collection, onSnapshot, query, where, orderBy } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import moment from 'moment';  // Import moment
 
 export default function NotificationScreen({ navigation }) {
     const [user, dispatch] = useContext(MyContext);
     const [notifications, setNotifications] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [notifiCountUnred,setNotifiCountUnred]= useState(0)
+    const [notifiCountUnred, setNotifiCountUnred] = useState(0)
 
     useEffect(() => {
         if (!user || !user.id) {
-            setLoading(false); // Ngừng loading khi không có user.id
+            setLoading(false); // Stop loading when there is no user.id
             return;
         }
+
         const notifiCollectionRef = collection(firestore, "notifications");
-        const queryRef = query(notifiCollectionRef, where("userID", "==", user.id))
-        let unreadCount =0
+        const queryRef = query(notifiCollectionRef, where("userID", "==", user.id), orderBy("timestamp", "desc"));
+
+        let unreadCount = 0;
+
         const unsubscribe = onSnapshot(queryRef, (snapshot) => {
             const notificationsData = [];
             snapshot.forEach((doc) => {
                 const data = doc.data();
                 notificationsData.push({ id: doc.id, ...data });
 
-                if(data.status==="unread"){
-                    unreadCount ++;
+                if (data.status === "unread") {
+                    unreadCount++;
                 }
-                
             });
-            console.log()
-            setNotifiCountUnred(unreadCount)
+
+            setNotifiCountUnred(unreadCount);
             setNotifications(notificationsData);
             setLoading(false);
         });
 
         return () => unsubscribe();
-    }, [user]);
+    }, [user, firestore]);
 
 
     const handleNotifiRead = async (notifityle, param) => {
-        let notifiDocRef;
         switch (notifityle) {
             case 'follow':
                 navigation.navigate("ProfileUserScreen", {
@@ -58,7 +59,7 @@ export default function NotificationScreen({ navigation }) {
                 navigation.navigate('JourneyDetail', { journeyID: param.journeyID, userID: param.userID });
                 break;
             case 'comment':
-                navigation.navigate('CommentJourneyScreen', { journeyID: param.journeyID, user_create: param.userID });
+                navigation.navigate('CommentJourneyScreen', { journeyID: param.journeyID, user_create: user.id });
                 break;
 
         }
@@ -91,7 +92,7 @@ export default function NotificationScreen({ navigation }) {
                                         param = { journeyID: item.journeyID, userID: item.user.id };
                                         break;
                                     case 'comment':
-                                        param = { journeyID: item.journeyID, user_create: item.user.id };
+                                        param = { journeyID: item.journeyID, user_create: user.id };
                                         break;
                                 }
                                 handleNotifiRead(item.notifityle, param);

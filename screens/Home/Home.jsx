@@ -1,98 +1,85 @@
 import React, { useEffect, useContext, useState, useCallback } from "react";
-import { View, Text, Image, ScrollView, FlatList, TouchableOpacity, ActivityIndicator, ImageBackground, TouchableWithoutFeedback } from "react-native";
+import { View, Text, Image, FlatList, TouchableOpacity, ActivityIndicator, TouchableWithoutFeedback } from "react-native";
 import HomeStyle from "../../styles/HomeStyle";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import SearchCpm from "../components/SearchCpm";
 import axios from "axios";
-import { black, item, mainColor, txt16 } from "../../assets/color";
+import { black, mainColor, txt16 } from "../../assets/color";
 import { Avatar } from "react-native-paper";
 import MyContext from "../../config/MyContext";
 import API, { authApi, endpoints } from "../../config/API";
 import { useFocusEffect } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-
 const HomeScreen = ({ navigation }) => {
     const [isLoading, setLoading] = useState(true);
     const [user, dispatch] = useContext(MyContext);
-
-
     const [searchQuery, setSearchQuery] = useState('');
-    const [dataJourney, setDataJourney] = useState([])
+    const [dataJourney, setDataJourney] = useState([]);
     const [likedState, setLikedState] = useState({});
-
+    const [page, setPage] = useState(1);
+    const [isFetchingMore, setIsFetchingMore] = useState(false);
 
     useEffect(() => {
-        JourneyGet();
-        handleLike();
+        JourneyGet(1);
     }, []);
 
-    useFocusEffect(
-        useCallback(() => {
-            JourneyGet()
-        }, [])
-    );
 
     const handleLike = async (journeyID) => {
         try {
-            const token = await AsyncStorage.getItem("access-token")
-            const res = await authApi(token).post(endpoints['like_journey'](journeyID))
+            const token = await AsyncStorage.getItem("access-token");
+            await authApi(token).post(endpoints['like_journey'](journeyID));
 
             setLikedState(prevLikedState => ({ ...prevLikedState, [journeyID]: true }));
-            // Cập nhật bài đăng được thích trong state posts
+
             setDataJourney(prevPosts => prevPosts.map(journey => {
                 if (journey.id === journeyID) {
                     return { ...journey, liked: true };
                 }
                 return journey;
             }));
-            JourneyGet();
+            JourneyGet(1);
 
         } catch (error) {
-            console.log(error)
-
+            console.log(error);
         }
     }
 
-
-    const JourneyGet = async () => {
+    const JourneyGet = async (page) => {
         try {
-            const token = await AsyncStorage.getItem("access-token")
-            const res = await authApi(token).get(endpoints['get_journey']);
-            console.log(token)
-            let journey = res.data.results
-            journey = journey.filter(j => j.active);
-            setDataJourney(journey)
+            const token = await AsyncStorage.getItem("access-token");
+            const res = await authApi(token).get(endpoints['get_journey'](page));
+            const journey = res.data.results;
 
-            const newLikeState = {}
+            setDataJourney(prevJourney => page === 1 ? journey : [...prevJourney, ...journey]);
+
+            const newLikeState = {};
             journey.forEach(journey => {
                 if (journey.liked) {
-                    newLikeState[journey.id] = true
+                    newLikeState[journey.id] = true;
                 }
             });
-            setLikedState(newLikeState)
+            setLikedState(prevState => ({ ...prevState, ...newLikeState }));
         } catch (error) {
-            console.error('Error fetching data:', error);
+            console.log('Error fetching data:', error);
         } finally {
-            setLoading(false)
+            setLoading(false);
+            setIsFetchingMore(false);
         }
     }
-
-
 
     const handleSearch = async () => {
         try {
-
-            const response = await API.get(endpoints['search_journey'](searchQuery))
-            const dataSearch = response.data.results
-            setDataJourney(dataSearch)
+            const response = await API.get(endpoints['search_journey'](searchQuery));
+            const dataSearch = response.data.results;
+            setDataJourney(dataSearch);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
     };
 
     const goToProfileUser = (id) => {
-        if (user.id === null) {
+        if (!user || user.id === null) {
             navigation.navigate("Đăng nhập");
         } else if (id === user.id) {
             navigation.navigate("Trang cá nhân");
@@ -114,7 +101,7 @@ const HomeScreen = ({ navigation }) => {
         return (
             <View style={HomeStyle.containerItemHome} key={item.id}>
                 <View style={HomeStyle.titleItemHome}>
-                    <View >
+                    <View>
                         <TouchableOpacity style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }} onPress={() => goToProfileUser(item.user_create.id)}>
                             <Avatar.Image size={30} source={{ uri: item.user_create.avatar }} />
                             <Text style={HomeStyle.nameUser}>{item.user_create.username}</Text>
@@ -132,7 +119,7 @@ const HomeScreen = ({ navigation }) => {
                         <View>
                             <View style={HomeStyle.goStart}>
                                 <Icon name="map-marker" color={mainColor} size={24}></Icon>
-                                <Text style={HomeStyle.text}>{truncate(item.start_location,40)}</Text>
+                                <Text style={HomeStyle.text}>{truncate(item.start_location, 40)}</Text>
                             </View>
                             <View style={HomeStyle.line}></View>
                             <View style={HomeStyle.goStart}>
@@ -162,14 +149,10 @@ const HomeScreen = ({ navigation }) => {
                                         </TouchableWithoutFeedback>
                                         <Text style={HomeStyle.text}>{item.likes_count} lượt thích</Text>
                                     </View>
-                                    <View style={HomeStyle.cardInfo}>
-
-                                        <TouchableOpacity onPress={() => navigation.navigate('CommentJourneyScreen', { journeyID: item.id, user_create: item.user_create.id })}>
-                                            <Icon name="comment-outline" size={24}></Icon>
-                                        </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => navigation.navigate('CommentJourneyScreen', { journeyID: item.id, user_create: item.user_create.id })} style={HomeStyle.cardInfo}>
+                                        <Icon name="comment-outline" size={24}></Icon>
                                         <Text style={HomeStyle.text}>{item.comments_count} bình luận</Text>
-
-                                    </View>
+                                    </TouchableOpacity>
                                 </View>
                             </>
                         )}
@@ -181,6 +164,17 @@ const HomeScreen = ({ navigation }) => {
         )
     }
 
+    const fetchMoreData = () => {
+        if (!isFetchingMore && dataJourney.length >= 10) {
+            setIsFetchingMore(true);
+            setPage(prevPage => {
+                const nextPage = prevPage + 1;
+                JourneyGet(nextPage);
+                return nextPage;
+            });
+        }
+    };
+
     return (
         <View style={HomeStyle.container}>
             <View style={HomeStyle.header}>
@@ -188,7 +182,9 @@ const HomeScreen = ({ navigation }) => {
                     {user !== null ? (
                         user.avatar !== null && user.username !== null ? (
                             <>
-                                <Avatar.Image size={30} source={{ uri: user.avatar }} />
+                                <TouchableOpacity onPress={() => navigation.navigate("Trang cá nhân")}>
+                                    <Avatar.Image size={30} source={{ uri: user.avatar }} />
+                                </TouchableOpacity>
                                 <Text style={HomeStyle.nameTitle}>Xin chào, {user.username}</Text>
                             </>
                         ) : (
@@ -207,23 +203,27 @@ const HomeScreen = ({ navigation }) => {
                 </View>
             </View>
 
-            {isLoading ? (
-                <ActivityIndicator color="black" size={'large'} style={HomeStyle.styleLoading} />
-            ) : dataJourney.length > 0 ? (
-                <FlatList
-                    data={dataJourney}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderJourneyItem}
-                    showsVerticalScrollIndicator={false}
-                />
-            ) : (
-                <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                    <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>Không có hành trình khả dụng.</Text>
-                </View>
-            )}
+            {
+                isLoading ? (
+                    <ActivityIndicator color="black" size={'large'} style={HomeStyle.styleLoading} />
+                ) : dataJourney.length > 0 ? (
+                    <FlatList
+                        data={dataJourney}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={renderJourneyItem}
+                        showsVerticalScrollIndicator={false}
+                        onEndReached={fetchMoreData}
+                        onEndReachedThreshold={0.5}
+                        ListFooterComponent={isFetchingMore && <ActivityIndicator color="black" size="large" />}
+                    />
+                ) : (
+                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
+                        <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>Không có hành trình khả dụng.</Text>
+                    </View>
+                )
+            }
         </View>
     );
-
 }
 
-export default HomeScreen
+export default HomeScreen;

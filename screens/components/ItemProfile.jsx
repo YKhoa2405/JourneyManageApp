@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { borderUnder, mainColor, txt18, item } from "../../assets/color";
+import { borderUnder, mainColor, txt18, item, white, textWeight } from "../../assets/color";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 
@@ -35,6 +35,10 @@ const styles = StyleSheet.create({
     },
     profileText: {
         fontSize: txt18,
-
+        color:white,
+        fontWeight:textWeight
     },
+    icon:{
+        color:white
+    }
 })

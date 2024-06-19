@@ -1,14 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View, Text } from "react-native";
 import MapView, { Marker } from "react-native-maps";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import { black, borderUnder, mainColor, txt16, white } from "../../assets/color";
-import { Avatar } from "react-native-paper";
+import { black, white } from "../../assets/color";
 import JourneyStyle from "./JourneyStyle";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { authApi, endpoints } from "../../config/API";
+import { Avatar } from "react-native-paper";
 
 const MapMember = ({ route, navigation }) => {
-    const { memberMap } = route.params;
-    const filteredMemberMap = memberMap.filter(item => item.post.latitude !== null && item.post.longitude !== null);
+    
+    const [post, setPost] = useState([]);
+    const { journeyID } = route.params;
+
+    useEffect(() => {
+        loadPost();
+    }, [journeyID]);
+
+    const loadPost = async () => {
+        try {
+            const token = await AsyncStorage.getItem('access-token');
+            const res = await authApi(token).get(endpoints['post'](journeyID));
+            const postData = res.data;
+            setPost(postData);
+            console.log(postData); // Kiểm tra dữ liệu đã được lấy từ API thành công hay chưa
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const calculateInitialRegion = (markers) => {
         if (markers.length === 0) {
@@ -20,8 +39,8 @@ const MapMember = ({ route, navigation }) => {
             };
         }
 
-        const latitudes = markers.map(marker => marker.post.latitude);
-        const longitudes = markers.map(marker => marker.post.longitude);
+        const latitudes = markers.map(marker => marker.latitude);
+        const longitudes = markers.map(marker => marker.longitude);
 
         const averageLatitude = latitudes.reduce((a, b) => a + b, 0) / latitudes.length;
         const averageLongitude = longitudes.reduce((a, b) => a + b, 0) / longitudes.length;
@@ -34,7 +53,6 @@ const MapMember = ({ route, navigation }) => {
         };
     };
 
-    const initialRegion = calculateInitialRegion(filteredMemberMap);
 
     return (
         <View style={{ flex: 1 }}>
@@ -42,21 +60,22 @@ const MapMember = ({ route, navigation }) => {
                 <Icon name="arrow-left" size={24} color={white} />
             </TouchableOpacity>
             <View style={styles.containerMap}>
-                {filteredMemberMap.length === 0 ? (
-                    <View style={{ alignItems: 'center', justifyContent: 'center', flex: 1 }}>
-                        <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>Không có dữ liệu vị trí thành viên.</Text>
+                {post.length === 0 ? (
+                    <View style={styles.noDataText}>
+                        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Không có dữ liệu vị trí thành viên.</Text>
                     </View>
                 ) : (
-                    <MapView
-                        style={styles.map}
-                        initialRegion={initialRegion}
-                    >
-                        {filteredMemberMap.map((item) => (
+                    <MapView style={styles.map} initialRegion={calculateInitialRegion(post)}>
+                        {post.map((item) => (
                             <Marker
                                 key={item.id}
-                                coordinate={{ latitude: item.post.latitude, longitude: item.post.longitude }}
+                                coordinate={{
+                                    latitude: item.latitude,
+                                    longitude: item.longitude
+                                }}
+                                title={item.visit_point}
                             >
-                                <Avatar.Image size={32} source={{ uri: item.avatar }} />
+                                <Avatar.Image size={32} source={{ uri: item.user.avatar }} />
                             </Marker>
                         ))}
                     </MapView>
@@ -74,13 +93,11 @@ const styles = StyleSheet.create({
     },
     map: {
         width: '100%',
-        height: "100%",
+        height: '100%',
     },
     noDataText: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        fontSize: 16,
-        color: black,
     },
 });

@@ -9,7 +9,8 @@ import MyContext from "../../config/MyContext";
 import API, { authApi, endpoints } from "../../config/API";
 import { ActivityIndicator } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { client_id } from "../../config/GOOGLE_API_KEY";
+import { client_id_api, client_secret_api } from "../../config/GOOGLE_API_KEY";
+import { ToastMess } from "../components/ToastMess";
 const LoginScreen = ({ navigation }) => {
 
     const [username, setUsername] = useState('')
@@ -19,40 +20,12 @@ const LoginScreen = ({ navigation }) => {
 
     const [loading, setLoading] = useState(false);
 
-
-    // useEffect(() => {
-    //     GoogleSignin.configure({
-    //         webClientId: client_id,
-    //         offlineAccess: false, // whether to access Google API when the user is not logged in
-    //         forceCodeForRefreshToken: true, // recommended for iOS
-    //     });
-    // }, []);
-
-    // const signInGoogle = async () => {
-    //     try {
-    //         await GoogleSignin.hasPlayServices();
-    //         const userInfo = await GoogleSignin.signIn();
-    //         // userInfo contains user data
-    //         console.log(userInfo);
-    //     } catch (error) {
-    //         if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-    //             // user cancelled the login flow
-    //             console.log('Google login cancelled');
-    //         } else if (error.code === statusCodes.IN_PROGRESS) {
-    //             // operation (e.g. sign in) is in progress already
-    //             console.log('Google login is already in progress');
-    //         } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-    //             // play services not available or outdated
-    //             console.log('Google play services are not available or outdated');
-    //         } else {
-    //             // some other error happened
-    //             console.error('Google login error', error);
-    //         }
-    //     }
-    // };
-
     // Xử lý đăng nhập
     const handleLogin = async () => {
+        if (!username || !password) {
+            ToastMess({ type: 'error', text1: 'Vui lòng nhập đầy đủ thông tin' })
+            return;
+        }
         setLoading(true)
         try {
             let header = {
@@ -61,8 +34,8 @@ const LoginScreen = ({ navigation }) => {
             let data = {
                 username: username,
                 password: password,
-                client_id: "LBXajny8yeTJ2htXFtXQI9ObsORb2asnIhtUDfJM",
-                client_secret: "vH9OlZXMiGm3IUYfxohsM2EjIawGjJgexSE2Y9RsB8EBe7CkeWyr3Cj6M9NbwoZxVAkzx9ST6NUtSaY4OToh5J8QdGBzi8h7GtPSzgNJefdD9UeOgZ8QfMO2JyhtgCX0",
+                client_id: client_id_api,
+                client_secret: client_secret_api,
                 grant_type: "password",
             };
             let res = await API.post(endpoints["login"], data, { headers: header });
@@ -90,7 +63,7 @@ const LoginScreen = ({ navigation }) => {
         <View style={LoginStyle.container}>
             <View style={LoginStyle.comtainerTitle}>
                 <Text style={LoginStyle.title}>Xin chào</Text>
-                <Text style={LoginStyle.wellcome}>Chào mừng trở lại</Text>
+                <Text style={LoginStyle.wellcome}>Chào mừng trở lại.</Text>
                 <Text style={LoginStyle.wellcome}>Vui lòng nhập thông tin của bạn.</Text>
             </View>
             <View>
@@ -104,7 +77,7 @@ const LoginScreen = ({ navigation }) => {
             </View>
             <View style={LoginStyle.inputContainer}>
                 <TouchableOpacity>
-                    <Text style={LoginStyle.forgotPass}>Quên mật khẩu ?</Text>
+                    <Text style={LoginStyle.forgotPass}></Text>
                 </TouchableOpacity>
             </View>
             <View>
@@ -114,12 +87,11 @@ const LoginScreen = ({ navigation }) => {
             </View>
             <View style={LoginStyle.lineContainer}>
                 <View style={LoginStyle.line}></View>
-                <Text style={LoginStyle.lineText}>hoặc</Text>
-                <View style={LoginStyle.line}></View>
+                {/* <Text style={LoginStyle.lineText}></Text> */}
             </View>
             <View style={LoginStyle.optionLoginContainer}>
-                <TouchableOpacity >
-                    <Image source={require('../../assets/google.png')} style={LoginStyle.optionImage}></Image>
+                <TouchableOpacity onPress={() => navigation.navigate('AdminScreen')}>
+                    <Image source={require('../../assets/admin-panel.png')} style={LoginStyle.optionImage}></Image>
                 </TouchableOpacity>
             </View>
             <View style={LoginStyle.registerContainer}>

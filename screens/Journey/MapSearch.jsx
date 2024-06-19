@@ -52,7 +52,51 @@ const MapSearch = ({ navigation, route }) => {
             setsearching1(false);
         }
     };
+    // Xử lý thay đổi của trường input, hiển thị gợi ý về địa chỉ
+    const handleQuery = async (t, type) => {
+        if (type === 'start') {
+            setsearchQuery(t);
+            setShowConfirmButton(!(t === "" || searching));
+            if (t === "") {
+                return;
+            }
+            try {
+                const response = await fetch(
+                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${GOOGLE_API_KEY}`
+                );
+                const data = await response.json();
+                const suggestion = data.resourceSets[0].resources[0].value.map(
+                    (a) => a.address.formattedAddress
+                );
+                setSuggestions(suggestion);
+            } catch (error) {
+                ToastMess({ type: 'error', text1: 'Có lỗi tìm kiếm địa điểm, vui lòng thử lại' })
 
+            }
+        } else if (type === 'end') {
+            setsearchQuery1(t);
+            setShowConfirmButton(!(t === "" || searching));
+            if (t === "") {
+                return;
+            }
+            try {
+                const response = await fetch(
+                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${GOOGLE_API_KEY}`
+                );
+                const data = await response.json();
+                const suggestion = data.resourceSets[0].resources[0].value.map(
+                    (a) => a.address.formattedAddress
+                );
+                setSuggestions1(suggestion);
+            } catch (error) {
+                ToastMess({ type: 'error', text1: 'Có lỗi tìm kiếm địa điểm, vui lòng thử lại' })
+
+            }
+        }
+    };
+
+    
+    // lấy địa điểm gợi ý đặt vào state để truyền params
     const handleFind = async (t, type) => {
         if (type === 'start') {
             setsearchQuery(t);
@@ -71,11 +115,8 @@ const MapSearch = ({ navigation, route }) => {
                 setLongitude(newlongitude);
                 setShowConfirmButton(true);
             } catch (error) {
-                console.error("Error searching location:", error);
-                Alert.alert(
-                    "Error",
-                    "An error occurred while searching for the location. Please try again later."
-                );
+                ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
+
             }
         } else if (type === 'end') {
             setsearchQuery1(t);
@@ -94,54 +135,13 @@ const MapSearch = ({ navigation, route }) => {
                 setLongitude1(newlongitude);
                 setShowConfirmButton(true);
             } catch (error) {
-                console.error("Error searching location:", error);
-                Alert.alert(
-                    "Error",
-                    "An error occurred while searching for the location. Please try again later."
-                );
+                ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
+
             }
         }
     };
 
-    const handleQuery = async (t, type) => {
-        if (type === 'start') {
-            setsearchQuery(t);
-            setShowConfirmButton(!(t === "" || searching));
-            if (t === "") {
-                return;
-            }
-            try {
-                const response = await fetch(
-                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${GOOGLE_API_KEY}`
-                );
-                const data = await response.json();
-                const suggestion = data.resourceSets[0].resources[0].value.map(
-                    (a) => a.address.formattedAddress
-                );
-                setSuggestions(suggestion);
-            } catch (error) {
-                console.error("Error searching suggestions:", error);
-            }
-        } else if (type === 'end') {
-            setsearchQuery1(t);
-            setShowConfirmButton(!(t === "" || searching));
-            if (t === "") {
-                return;
-            }
-            try {
-                const response = await fetch(
-                    `http://dev.virtualearth.net/REST/v1/Autosuggest?query=${t}&key=${GOOGLE_API_KEY}`
-                );
-                const data = await response.json();
-                const suggestion = data.resourceSets[0].resources[0].value.map(
-                    (a) => a.address.formattedAddress
-                );
-                setSuggestions1(suggestion);
-            } catch (error) {
-                console.error("Error searching suggestions:", error);
-            }
-        }
-    };
+
 
     const fetchLocation = async (query) => {
         try {
@@ -151,7 +151,6 @@ const MapSearch = ({ navigation, route }) => {
             const data = await response.json();
             return data.resourceSets[0].resources[0].name;
         } catch (error) {
-            console.error("Error searching location:", error);
             throw new Error("An error occurred while searching for the location. Please try again later.");
         }
     };
@@ -180,7 +179,8 @@ const MapSearch = ({ navigation, route }) => {
             await fetchRoutePath(latitude, longitude, latitude1, longitude1);
 
         } catch (error) {
-            Alert.alert("Error", error.message);
+            ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
+
         }
     };
 
@@ -197,11 +197,8 @@ const MapSearch = ({ navigation, route }) => {
             }));
             setRoutePath(path);
         } catch (error) {
-            console.error("Error fetching route path:", error);
-            Alert.alert(
-                "Error",
-                "An error occurred while fetching the route path. Please try again later."
-            );
+            ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
+
         }
     };
 

@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const HOST = "https://hieujourneyy.pythonanywhere.com";
+const HOST = "https://hieujourney3.pythonanywhere.com";
 
 export const endpoints = {
     // user
@@ -10,14 +10,15 @@ export const endpoints = {
     'update_user': '/user/current_user/',
     'delete_user': '/user/current_user/',
     'user_profile': (userId) => `/user/${userId}/`,
-    'report_user': `/Report/report_user/`,
-    'follow':(userId) => `/user/${userId}/follow/`,
-    'followers':(userId) => `/user/${userId}/followers/`,
-    'following':(userId) => `/user/${userId}/following/`,
+    'report_user': (userId) => `/user/${userId}/report_user/`,
+    'follow': (userId) => `/user/${userId}/follow/`,
+    'followers': (userId) => `/user/${userId}/followers/`,
+    'following': (userId) => `/user/${userId}/following/`,
+    'user_journey_profile': (userId) => `/user/${userId}/journeys/`,
 
     // Journey
     'search_journey': (searchQuery) => `journey/?q=${encodeURIComponent(searchQuery)}`,
-    'get_journey': '/journey/',
+    'get_journey': (page) => `/journey/?page=${page}`,
     'post_journey': '/journey/',
     'del_journey': (journeyId) => `/journey/${journeyId}/`,
     'edit_journey': (journeyId) => `/journey/${journeyId}/`,
@@ -31,7 +32,7 @@ export const endpoints = {
     'reply_comment': (journeyID) => `/journey/${journeyID}/comment_reply/`,
     'user_journeys': `/user_journeys/`,
     'detail_journey': (journeyID) => `/journey/${journeyID}/`,
-    'rating_journey':(journeyID)=>`/journey/${journeyID}/rate_journey/`,
+    'rating_journey': (journeyID) => `/journey/${journeyID}/rate_journey/`,
 
 
     // post
@@ -46,10 +47,14 @@ export const endpoints = {
     'get_comment': (postId) => `/post/${postId}/comments/`,
     'like_count': (postId) => `/post/${postId}/likes_count/`,
     'delete_comment_post': (postId, commentID) => `/post/${postId}/delete_comment/${commentID}/`,
+    'reply_commment_post': (postId) => `/post/${postId}/comment_reply/`,
 
     //member
     'member_journey': (journeyID) => `/journey/${journeyID}/members/`,
     'member_delete': (journeyID) => `/journey/${journeyID}//delete_participant/`,
+
+    //vnpayAPI
+    'vnpay_post': '/vnpay/payment_url/'
 
 
 

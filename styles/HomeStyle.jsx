@@ -22,7 +22,8 @@ const HomeStyle = StyleSheet.create({
     nameTitle: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginLeft: 10
+        marginLeft: 10,
+        color:white
     },
     iconHeader: {
         alignItems: 'center',

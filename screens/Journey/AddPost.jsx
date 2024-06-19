@@ -1,4 +1,3 @@
-import { useNavigation, useRoute } from "@react-navigation/native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { View, Text, Image, ActivityIndicator, Alert, Button, TextInput, FlatList, StyleSheet, Dimensions, PermissionsAndroid } from "react-native";
 import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
@@ -14,6 +13,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import { firestore } from "../../config/FirebaseConfig";
 import * as Location from 'expo-location';
 import JourneyStyle from "./JourneyStyle";
+import { GOOGLE_API_KEY } from "../../config/GOOGLE_API_KEY";
 
 
 
@@ -43,10 +43,8 @@ const AddPost = ({ route, navigation }) => {
             const { latitude, longitude } = currentLocation.coords;
             setLatitude(latitude)
             setLongitude(longitude)
-            const API_key =
-                "ArvHYzlNC_zl-qapSPj9KUSjb17DNAmCTHf0Lv-_sWiptCT-R26Ss9wvW5n9ytMr ";
             const response = await fetch(
-                `http://dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?key=${API_key}`
+                `http://dev.virtualearth.net/REST/v1/Locations/${latitude},${longitude}?key=${GOOGLE_API_KEY}`
             );
             const data = await response.json();
             console.log(data)
@@ -61,9 +59,9 @@ const AddPost = ({ route, navigation }) => {
     const selectImages = async () => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false, // Disable allowsEditing since allowsMultipleSelection is enabled
+            allowsEditing: false,
             quality: 1,
-            allowsMultipleSelection: true // Enable multiple image selection
+            allowsMultipleSelection: true
         });
 
         if (!result.canceled) {

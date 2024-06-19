@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { borderUnder, item, mainColor, txt16, txt20, txt22, white } from "../../assets/color";
+import { borderUnder, item, mainColor, textWeight, txt16, txt20, txt22, white } from "../../assets/color";
 
 const ProfileStyle = StyleSheet.create({
     container: {
@@ -22,15 +22,15 @@ const ProfileStyle = StyleSheet.create({
     fullnameUser: {
         paddingLeft: 20,
     },
-    fullnameStar:{
-        paddingLeft:20,
-        flexDirection:'row',
-        alignItems:'center'
+    fullnameStar: {
+        paddingLeft: 20,
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     lableFullname: {
-        fontWeight: '600',
+        fontWeight: textWeight,
         fontSize: txt16,
-        marginLeft:5
+        marginLeft: 5
     },
     buttonFollow: {
         paddingHorizontal: 28,
@@ -44,7 +44,7 @@ const ProfileStyle = StyleSheet.create({
     },
     contentIcon: {
         paddingHorizontal: 20,
-        paddingTop: 20, paddingBottom: 10,
+        paddingVertical: 5,
         borderBottomWidth: 1,
         borderColor: borderUnder
     },

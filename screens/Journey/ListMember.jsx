@@ -15,8 +15,6 @@ const ListMember = ({ route, navigation }) => {
     const { journeyID } = route.params;
     const [member, setMember] = useState([])
     const [isLoading, setLoading] = useState(true)
-    const usersWithPosts = member.filter(member => member.post !== null);
-    console.log(usersWithPosts)
     const [user, dispatch] = useContext(MyContext);
 
 
@@ -86,7 +84,7 @@ const ListMember = ({ route, navigation }) => {
                 title={'Danh sách thành viên'}
                 leftIcon={'arrow-left'}
                 handleLeftIcon={() => navigation.goBack()}
-                handleRightIcon={() => navigation.navigate("MapMember", { memberMap: usersWithPosts })}
+                handleRightIcon={() => navigation.navigate("MapMember", { journeyID: journeyID })}
                 rightIcon={'map'} />
             {isLoading ? <ActivityIndicator color={black} size={'large'} style={HomeStyle.styleLoading} /> : <>
                 <FlatList

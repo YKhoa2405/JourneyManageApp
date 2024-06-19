@@ -18,6 +18,7 @@ import HomeStyle from "../../styles/HomeStyle";
 
 const CommentJourneyScreen = ({ route, navigation }) => {
     const { journeyID, user_create } = route.params;
+
     const [user, dispatch] = useContext(MyContext)
     const isOwner = user.id === user_create;
     const [comment, setComment] = useState([])
@@ -75,7 +76,7 @@ const CommentJourneyScreen = ({ route, navigation }) => {
                                     timestamp: timestamp,
                                     userID: userID, // ID của người nhận
                                     user: user, // Thông tin về người thực hiện hành động
-                                    message: `${user.first_name} đã duyệt bạn vào hành trình của họ`,
+                                    message: `${user.username} đã duyệt bạn vào hành trình của họ`,
                                     status: "unread",
                                     journeyID: journeyID,
                                     notifityle: "journey"
@@ -83,11 +84,10 @@ const CommentJourneyScreen = ({ route, navigation }) => {
 
                                 console.log("Thông báo đã được gửi thành công.");
                             } catch (error) {
-                                console.error("Lỗi khi gửi thông báo:", error);
+                                console.log("Lỗi khi gửi thông báo:", error);
                             }
                         } catch (error) {
                             ToastMess({ type: 'error', text1: 'Có lỗi xảy ra!!' })
-                            console.log(error)
                         }
                     },
                 },
@@ -136,7 +136,7 @@ const CommentJourneyScreen = ({ route, navigation }) => {
                     timestamp: timestamp,
                     userID: user_create, // ID của người nhận
                     user: user, // Thông tin về người thực hiện hành động
-                    message: `${user.first_name} đã bình luận vào hành trình của bạn`,
+                    message: `${user.username} đã bình luận vào hành trình của bạn`,
                     status: "unread",
                     journeyID: journeyID,
                     notifityle: "comment"
@@ -202,7 +202,7 @@ const CommentJourneyScreen = ({ route, navigation }) => {
     return (
         <View style={{ flex: 1 }}>
             <UIHeader
-                title={'Bình luận'}
+                title={'Bình luận hành trình'}
                 leftIcon={'arrow-left'}
                 handleLeftIcon={() => navigation.goBack()} />
             <ScrollView>
@@ -228,9 +228,10 @@ const CommentJourneyScreen = ({ route, navigation }) => {
 
                                     <Text style={{ fontWeight: '500' }}>{moment(c.created_date).fromNow()}</Text>
                                     {user.id !== c.user.id ? (
-                                        <TouchableOpacity onPress={() => handleReplyComment(c.id)}>
-                                            <Text style={{ fontWeight: '600' }}>Phản hồi</Text>
-                                        </TouchableOpacity>
+                                        // <TouchableOpacity onPress={() => handleReplyComment(c.id)}>
+                                        //     <Text style={{ fontWeight: '600' }}>Phản hồi</Text>
+                                        // </TouchableOpacity>
+                                        null
                                     ) : (
                                         <TouchableOpacity onPress={() => handleDeleteComment(c.id)}>
                                             <Text style={{ fontWeight: '600' }}>Xóa bình luận</Text>

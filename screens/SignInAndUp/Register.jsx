@@ -5,7 +5,7 @@ import ButtonMain from "../components/ButtonMain";
 import InputCpm from "../components/InputCpm";
 import InputPass from "../components/InputPass";
 import * as ImagePicker from 'expo-image-picker';
-import API, { Host, endpoints } from "../../config/API";
+import API, {  endpoints } from "../../config/API";
 import { ToastMess } from "../components/ToastMess";
 import HomeStyle from "../../styles/HomeStyle";
 
@@ -73,9 +73,6 @@ const RegisterScreen = ({ navigation }) => {
                 },
             });
 
-            // const userID = uuid.v4()
-            // database().ref('/users/'+userID).set(formRegister)
-            // console.log('ok thanh cong')
             setIsLoading(false);
             ToastMess({ type: 'success', text1: 'Đăng ký tài khoản thành công' })
 
@@ -130,14 +127,14 @@ const RegisterScreen = ({ navigation }) => {
             </View>
             <View style={styles.lineContainer}>
                 <View style={styles.line}></View>
-                <Text style={styles.lineText}>hoặc</Text>
-                <View style={styles.line}></View>
+                {/* <Text style={styles.lineText}>hoặc</Text>
+                <View style={styles.line}></View> */}
             </View>
-            <View style={styles.optionLoginContainer}>
+            {/* <View style={styles.optionLoginContainer}>
                 <TouchableOpacity>
                     <Image source={require('../../assets/google.png')} style={styles.optionImage}></Image>
                 </TouchableOpacity>
-            </View>
+            </View> */}
             <View style={styles.loginContainer}>
                 <Text style={styles.forgotPass}>Bạn đã có tài khoản ? </Text>
                 <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}><Text style={{ fontWeight: '500', color: mainColor }}>Đăng nhập</Text></TouchableOpacity>

@@ -45,6 +45,9 @@ export const ImagesRandom = [
     },
     {
         image: 'https://res.cloudinary.com/dsbebvfff/image/upload/v1716023979/31201_qur5i6.jpg'
+    },
+    {
+        image: 'https://res.cloudinary.com/dsbebvfff/image/upload/v1718730800/pexels-pok-rie-33563-982263_jyw5od.jpg'
     }
 ]
 

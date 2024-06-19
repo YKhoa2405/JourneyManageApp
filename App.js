@@ -1,4 +1,5 @@
-import NaviBottom from './screens/navigation/NaviBottom';
+import ProfileScreen from './screens/Profile/Profile';
+import NaviBottom, { ProfileStackNavigator } from './screens/navigation/NaviBottom';
 
 import React from 'react';
 

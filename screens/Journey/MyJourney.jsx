@@ -55,7 +55,7 @@ const MyJourney = ({ navigation }) => {
                     <View style={JourneyStyle.infoJourney}>
 
                         <Text style={{ fontWeight: 'bold', fontSize: txt16, marginBottom: 10 }}>
-                            {item.name_journey.length > 30? item.name_journey.split(' ').slice(0, 4).join(' ') + '...' : item.name_journey}
+                            {item.name_journey.length > 30 ? item.name_journey.split(' ').slice(0, 3).join(' ') + '...' : item.name_journey}
                         </Text>
 
                         <Text style={{ fontWeight: 'bold', fontSize: txt16 }}>
@@ -89,22 +89,24 @@ const MyJourney = ({ navigation }) => {
     return (
         <View style={JourneyStyle.JourneyContainer}>
             <UIHeader
-                title={'Hành trình của tôi'}
+                title={'Hành trình tham gia'}
                 leftIcon={'arrow-left'}
-                handleLeftIcon={() => navigation.goBack()}
-                rightIcon={''} />
-            {isLoading ? (
-                <ActivityIndicator color={black} size='small' style={HomeStyle.styleLoading} />
-            ) : (
-                <FlatList
-                    data={data}
-                    renderItem={renderItem}
-                    numColumns={2}
-                    contentContainerStyle={JourneyStyle.flatListContent}
-                    keyExtractor={(item) => item.id.toString()} // Thêm keyExtractor để tránh cảnh báo
-                    ListEmptyComponent={<Text style={JourneyStyle.emptyList}>Không có hành trình nào</Text>} // Hiển thị thông báo khi danh sách trống
-                />
-            )}
+                handleLeftIcon={() => navigation.goBack()} />
+
+            <View style={{flex:1}}>
+                {isLoading ? (
+                    <ActivityIndicator color={black} size='small' style={HomeStyle.styleLoading} />
+                ) : (
+                    <FlatList
+                        data={data}
+                        renderItem={renderItem}
+                        numColumns={2}
+                        contentContainerStyle={JourneyStyle.flatListContent}
+                        keyExtractor={(item) => item.id.toString()} // Thêm keyExtractor để tránh cảnh báo
+                        ListEmptyComponent={<Text style={JourneyStyle.emptyList}>Không có hành trình nào</Text>} // Hiển thị thông báo khi danh sách trống
+                    />
+                )}
+            </View>
         </View>
     )
 

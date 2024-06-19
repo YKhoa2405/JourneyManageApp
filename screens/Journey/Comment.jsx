@@ -1,135 +1,137 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
-import { View, Text, Image, ActivityIndicator, TextInput, Modal } from "react-native";
-import JourneyStyle from "./JourneyStyle";
-import { ScrollView, TouchableOpacity } from "react-native-gesture-handler";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import MapView from "react-native-maps";
-import API, { authApi, endpoints } from "../../config/API";
+import { View, Text, TextInput, ScrollView, TouchableOpacity } from "react-native";
 import { Avatar } from "react-native-paper";
-import { black, borderUnder, mainColor, transparent, txt20 } from "../../assets/color";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import moment from "moment";
-import 'moment/locale/vi';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import MyContext from "../../config/MyContext";
 import { ToastMess } from "../components/ToastMess";
-import HomeStyle from "../../styles/HomeStyle";
-import ItemProfile from "../components/ItemProfile";
+import JourneyStyle from "./JourneyStyle";
+import API, { authApi, endpoints } from "../../config/API";
+import { black, mainColor } from "../../assets/color";
 
 const CommentScreen = ({ route }) => {
     const { postID } = route.params;
-    const [user, dispatch] = useContext(MyContext)
+    const [user, dispatch] = useContext(MyContext);
 
-    const [comment, setComment] = useState([])
-    const [content, setContent] = useState()
-
-    const [openModel, setOpenModel] = useState(false);
+    const [comment, setComment] = useState([]);
+    const [content, setContent] = useState("");
+    const [replyingTo, setReplyingTo] = useState(null); // State để lưu id của comment đang phản hồi
+    const inputRef = useRef(null);
 
     useEffect(() => {
-        loadComment()
-    }, [])
+        loadComment();
+    }, []);
 
     const loadComment = async () => {
         try {
-            const res = await API.get(endpoints['get_comment'](postID))
-            const comment = res.data.sort((a, b) => new Date(b.created_date) - new Date(a.created_date));
-
-            setComment(comment)
+            const res = await API.get(endpoints["get_comment"](postID));
+            const sortedComments = res.data.sort(
+                (a, b) => new Date(b.created_date) - new Date(a.created_date)
+            );
+            setComment(sortedComments);
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
     const addComment = async () => {
         try {
             let token = await AsyncStorage.getItem("access-token");
-            let res = await authApi(token).post(endpoints['add_comment'](postID), {
-                "content": content
-            })
-            ToastMess({ type: 'success', text1: 'Bình luận thành công' })
-
-            setContent('');
-            loadComment()
+            let res = await authApi(token).post(endpoints["add_comment"](postID), {
+                content: content,
+            });
+            ToastMess({ type: "success", text1: "Bình luận thành công" });
+            setContent("");
+            loadComment();
         } catch (error) {
-            console.log(error)
+            console.log(error);
         }
-    }
+    };
 
-    const renderModel = (commentID) => {
-        return (
-            <Modal visible={openModel} animationType="slide" transparent={true} >
-                <View style={{ flex: 1, backgroundColor: transparent, alignItems: 'center', justifyContent: 'flex-end', paddingBottom: 20 }}>
+    const replyCommentPost = async (commentID) => {
+        inputRef.current.focus();
+        setReplyingTo(commentID); // Đặt id của comment đang phản hồi vào state
+    };
 
-                    <View style={JourneyStyle.styleModel}>
-                        <View style={JourneyStyle.headerModel}>
-                            <Text style={{
-                                fontWeight: 'bold',
-                                fontSize: txt20
-                            }}></Text>
-                            <Icon.Button
-                                size={24}
-                                name="close"
-                                backgroundColor="white"
-                                color="red"
-                                onPress={() => setOpenModel(false)} />
-                        </View>
-                        <View style={{ marginTop: 20 }}>
-                            <ItemProfile label={'Xóa bình luận'}
-                                rightIcon={'delete'}
-                                onPress={() => handleDeleteComment(commentID)}
-                                backgroundColor={borderUnder}
-                            />
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-        )
-    }
+    const handleReplySubmit = async () => {
+        try {
+            let token = await AsyncStorage.getItem("access-token");
+            await authApi(token).post(endpoints["reply_commment_post"](postID), {
+                content: content,
+                comment_id: replyingTo, // Sử dụng id của comment đang phản hồi
+            });
+            ToastMess({ type: "success", text1: "Phản hồi thành công" });
+            setContent("");
+            setReplyingTo(null); // Đặt lại state của replyingTo về null để không còn phản hồi nữa
+            loadComment();
+        } catch (error) {
+            console.log(error);
+        }
+    };
 
     const handleDeleteComment = async (commentId) => {
-        console.log(commentId)
         try {
             const token = await AsyncStorage.getItem("access-token");
-            console.log(token)
-            console.log(commentId)
-            console.log(postID)
-            await authApi(token).delete(endpoints['delete_comment_post'](postID, commentId))
-            ToastMess({ type: 'success', text1: 'Xóa bình luận thành công' })
-            setOpenModel(false)
-            loadComment()
-
+            await authApi(token).delete(endpoints["delete_comment_post"](postID, commentId));
+            ToastMess({ type: "success", text1: "Xóa bình luận thành công" });
+            loadComment();
         } catch (error) {
-            console.log(error)
-            ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
-
+            console.log(error);
+            ToastMess({ type: "error", text1: "Có lỗi xảy ra, vui lòng thử lại" });
         }
-    }
+    };
 
     return (
         <View style={{ flex: 1 }}>
             <ScrollView>
                 {comment === null ? (
-                    <ActivityIndicator color={black} size={'large'} style={HomeStyle.styleLoading} />
+                    <ActivityIndicator color={black} size={"large"} style={HomeStyle.styleLoading} />
                 ) : comment && comment.length > 0 ? (
-                    comment.map(c => (
+                    comment.map((c) => (
                         <View style={JourneyStyle.viewComment} key={c.id}>
-                            {renderModel(c.id)}
                             <Avatar.Image source={{ uri: c.user.avatar }} size={30} />
                             <View style={JourneyStyle.contentComment}>
-                                <Text style={{ fontWeight: 'bold' }}>{c.user.username}</Text>
+                                <Text style={{ fontWeight: "bold" }}>{c.user.username}</Text>
                                 <Text>{c.content}</Text>
-                                {/* You might want to format the date */}
-                                <Text style={{ fontWeight: '500' }}>{moment(c.created_date).fromNow()}</Text>
+                                <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
+                                    <Text style={{ fontWeight: "500" }}>{moment(c.created_date).fromNow()}</Text>
+                                    {user.id !== c.user.id ? (
+                                        <TouchableOpacity onPress={() => replyCommentPost(c.id)}>
+                                            <Text style={{ fontWeight: "600" }}>Phản hồi</Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity onPress={() => handleDeleteComment(c.id)}>
+                                            <Text style={{ fontWeight: "600" }}>Xóa bình luận</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                                {c.replies.map((reply) => (
+                                    <View key={reply.id} style={{ flexDirection: "row", alignItems: "center" }}>
+                                        <Avatar.Image source={{ uri: reply.user.avatar }} size={30} />
+                                        <View style={{ marginLeft: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', flex: 1 }}>
+                                            <View>
+                                                <Text style={{ fontWeight: "bold" }}>{reply.user.username}</Text>
+                                                <Text>{reply.content}</Text>
+                                                <Text style={{ fontWeight: "500" }}>{moment(reply.created_date).fromNow()}</Text>
+                                            </View>
+                                            <View>
+                                                {user.id !== reply.user.id ? (
+                                                    null
+                                                ) : (
+                                                    <TouchableOpacity onPress={() => handleDeleteComment(c.id)}>
+                                                        <Text style={{ fontWeight: "600" }}>Xóa bình luận</Text>
+                                                    </TouchableOpacity>
+                                                )}
+                                            </View>
+                                        </View>
+                                    </View>
+                                ))}
                             </View>
-                            {user.id === c.user.id && (
-
-                                <TouchableOpacity onPress={() => setOpenModel(true)}>
-                                    <Icon name='dots-vertical' size={24}></Icon>
-                                </TouchableOpacity>
-                            )}
                         </View>
                     ))
                 ) : (
-                    <Text style={{ margin: 10, fontWeight: 'bold' }}>Hãy là người đầu tiên bình luận về nội dung này</Text>
+                    <Text style={{ margin: 10, fontWeight: "bold" }}>Hãy là người đầu tiên bình luận về nội dung này</Text>
                 )}
             </ScrollView>
 
@@ -137,26 +139,32 @@ const CommentScreen = ({ route }) => {
                 <Avatar.Image source={{ uri: user.avatar }} size={30} />
                 <TextInput
                     value={content}
-                    onChangeText={t => setContent(t)}
+                    onChangeText={(text) => setContent(text)}
                     placeholder="Viết bình luận..."
-                    style={JourneyStyle.inputComment} />
-
+                    style={JourneyStyle.inputComment}
+                    ref={inputRef}
+                />
                 <TouchableOpacity
                     onPress={() => {
                         if (content && content.trim() !== "") {
-                            addComment(postID);
+                            if (replyingTo) {
+                                handleReplySubmit(); // Nếu đang phản hồi, gọi hàm xử lý phản hồi
+                            } else {
+                                addComment(postID); // Ngược lại, gọi hàm thêm bình luận
+                            }
                         }
                     }}
                     disabled={!content || content.trim() === ""}
                 >
-                    <Icon name="send" size={28} style={{ color: content && content.trim() !== "" ? mainColor : black }} />
+                    <Icon
+                        name="send"
+                        size={28}
+                        style={{ color: content && content.trim() !== "" ? mainColor : black }}
+                    />
                 </TouchableOpacity>
             </View>
         </View>
+    );
+};
 
-    )
-
-
-}
-
-export default CommentScreen
+export default CommentScreen;

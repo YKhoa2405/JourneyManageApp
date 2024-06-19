@@ -22,10 +22,9 @@ import {
     borderUnder,
     item,
     mainColor,
+    textWeight,
     transparent,
     txt16,
-    txt18,
-    txt20,
     white
 } from "../../assets/color";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -53,6 +52,10 @@ const ProfileUserScreen = ({ navigation, route }) => {
     const [isLoading, setLoading] = useState(true);
     const [openModel, setOpenModel] = useState(false);
     const [report, setReport] = useState("");
+    const timestamp = new Date();
+
+    const [user] = useContext(MyContext)
+
 
     useEffect(() => {
         const loadProfileData = async () => {
@@ -66,7 +69,6 @@ const ProfileUserScreen = ({ navigation, route }) => {
     const loadProfileUser = async () => {
         try {
             const token = await AsyncStorage.getItem("access-token")
-
             const response = await authApi(token).get(endpoints["user_profile"](userId));
             setMyUser(response.data);
             console.log(response.data)
@@ -77,14 +79,10 @@ const ProfileUserScreen = ({ navigation, route }) => {
 
     const getMyJourney = async () => {
         try {
-            const res = await API.get(endpoints["get_journey"]);
-            const journey = res.data.results;
-            const filteredJourney = journey.filter(
-                (item) => item.user_create.id === userId
-            );
-            setMyJourney(filteredJourney);
+            const res = await API.get(endpoints['user_journey_profile'](userId));
+            setMyJourney(res.data)
         } catch (error) {
-            console.error("Error fetching data:", error);
+            console.log("Error fetching data:", error);
         }
     };
 
@@ -101,11 +99,17 @@ const ProfileUserScreen = ({ navigation, route }) => {
                     text: "Đồng ý",
                     onPress: async () => {
                         try {
+                            let formData = new FormData();
+                            formData.append('reason', report);
                             const token = await AsyncStorage.getItem("access-token");
-                            await authApi(token).post(endpoints["report_user"], {
-                                reported_user_id: userId,
-                                reason: report
-                            });
+                            await authApi(token).post(endpoints["report_user"](userId),
+                                formData,
+                                {
+                                    headers: {
+                                        'accept': 'application/json',
+                                        'Content-Type': 'multipart/form-data',
+                                    }
+                                });
                             ToastMess({
                                 type: "success",
                                 text1: "Báo cáo thành công, chúng tôi đã ghi nhận thông tin"
@@ -118,6 +122,8 @@ const ProfileUserScreen = ({ navigation, route }) => {
                                 type: "error",
                                 text1: "Có lỗi xảy ra, vui lòng thử lại"
                             });
+                            setOpenModel(false);
+                            setReport("");
                         }
                     }
                 }
@@ -131,8 +137,26 @@ const ProfileUserScreen = ({ navigation, route }) => {
             const token = await AsyncStorage.getItem("access-token");
             await authApi(token).post(endpoints["follow"](userId));
             loadProfileUser()
+            if (myUser.followed === false) {
+                try {
+                    // Thêm thông báo vào collection "notifications" với trường userID là ID của người nhận
+                    const notifiCollectionRef = collection(firestore, "notifications");
+                    await addDoc(notifiCollectionRef, {
+                        timestamp: timestamp,
+                        userID: userId, // ID của người nhận
+                        user: user, // Thông tin về người thực hiện hành động
+                        message: `${user.first_name} đã bắt đầu theo dõi bạn.`,
+                        status: "unread",
+                        notifityle: "follow"
+                    });
+
+                    console.log("Thông báo đã được gửi thành công.");
+                } catch (error) {
+                    console.log("Lỗi khi gửi thông báo:", error);
+                }
+            }
         } catch (error) {
-            console.error(error);
+            console.log(error);
         }
     };
 
@@ -146,7 +170,7 @@ const ProfileUserScreen = ({ navigation, route }) => {
                     <View style={JourneyStyle.infoJourney}>
                         <Text style={{ fontWeight: "bold", fontSize: txt16, marginBottom: 10 }}>
                             {item.name_journey.length > 30
-                                ? item.name_journey.split(" ").slice(0, 4).join(" ") + "..."
+                                ? item.name_journey.split(" ").slice(0, 3).join(" ") + "..."
                                 : item.name_journey}
                         </Text>
                         <Text style={{ fontWeight: "bold", fontSize: txt16 }}>
@@ -162,11 +186,11 @@ const ProfileUserScreen = ({ navigation, route }) => {
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         <Icon name="star" color={"gold"} size={24}></Icon>
-                        <Text style={{fontWeight:'bold'}}>{item.average_rating}</Text>
+                        <Text style={{ fontWeight: 'bold' }}>{item.average_rating}</Text>
                     </View>
                     <View style={JourneyStyle.userJourney}>
                         {item.active == false ? (
-                            <Text style={{ fontWeight: "bold", fontSize: txt16,color:mainColor }}>Hoàn thành </Text>
+                            <Text style={{ fontWeight: "bold", fontSize: txt16, color: mainColor }}>Hoàn thành </Text>
                         ) : (
                             <Text style={{ fontWeight: "bold", fontSize: txt16 }}>Đang diễn ra </Text>
                         )}
@@ -189,7 +213,7 @@ const ProfileUserScreen = ({ navigation, route }) => {
                 >
                     <View style={styles.styleModel}>
                         <View style={styles.headerModel}>
-                            <Text style={styles.lableTop}>Lý do báo cáo</Text>
+                            <Text style={ProfileStyle.lableTop}>Lý do báo cáo</Text>
                             <TouchableOpacity onPress={() => setOpenModel(false)}>
                                 <Icon name="close" size={24} color={"red"} />
                             </TouchableOpacity>
@@ -221,7 +245,7 @@ const ProfileUserScreen = ({ navigation, route }) => {
     }
 
     return (
-        <View style={styles.container}>
+        <View style={ProfileStyle.container}>
             {myUser && (
                 <UIHeader
                     title={myUser.username}
@@ -235,16 +259,16 @@ const ProfileUserScreen = ({ navigation, route }) => {
                 <View>
                     <View style={styles.header}>
                         <Avatar.Image source={{ uri: myUser.avatar }} size={70} />
-                        <View style={styles.headerItem}>
-                            <Text style={styles.lableTop}>10</Text>
+                        <View style={ProfileStyle.headerItem}>
+                            <Text style={ProfileStyle.lableTop}>{myUser.journey_count}</Text>
                             <Text>hành trình</Text>
                         </View>
-                        <TouchableOpacity style={styles.headerItem} onPress={() => navigation.navigate('FollowList', { userID: userId, isFollow: 'followers',follow_count:myUser.follower_count })}>
-                            <Text style={styles.lableTop}>{myUser.follower_count}</Text>
+                        <TouchableOpacity style={ProfileStyle.headerItem} onPress={() => navigation.navigate('FollowList', { userID: userId, isFollow: 'followers', follow_count: myUser.follower_count })}>
+                            <Text style={ProfileStyle.lableTop}>{myUser.follower_count}</Text>
                             <Text>người theo dõi</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.headerItem} onPress={() => navigation.navigate('FollowList', { userID: userId, isFollow: 'following',follow_count:myUser.following_count })}>
-                            <Text style={styles.lableTop}>{myUser.following_count}</Text>
+                        <TouchableOpacity style={ProfileStyle.headerItem} onPress={() => navigation.navigate('FollowList', { userID: userId, isFollow: 'following', follow_count: myUser.following_count })}>
+                            <Text style={ProfileStyle.lableTop}>{myUser.following_count}</Text>
                             <Text>đang theo dõi</Text>
                         </TouchableOpacity>
                     </View>
@@ -258,7 +282,7 @@ const ProfileUserScreen = ({ navigation, route }) => {
                     </View>
                     <View style={styles.header}>
                         <TouchableOpacity style={[styles.buttonFollow, { backgroundColor: myUser.followed ? borderUnder : mainColor }]} onPress={() => handleFollow(myUser.id)}>
-                            <Text style={[styles.lableButton, { color: myUser.followed ? null : white }]}>
+                            <Text style={[ProfileStyle.lableButton, { color: myUser.followed ? null : white }]}>
                                 {myUser.followed ? 'Đang theo dõi' : 'Theo dõi'}
                             </Text>
                         </TouchableOpacity>
@@ -268,33 +292,28 @@ const ProfileUserScreen = ({ navigation, route }) => {
                                 navigation.navigate("MessageDetail", { userChatID: myUser });
                             }}
                         >
-                            <Text style={styles.lableButton}>Nhắn tin</Text>
+                            <Text style={ProfileStyle.lableButton}>Nhắn tin</Text>
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.contentIcon}>
-                        <Icon name="view-list-outline" size={32} style={{ opacity: 0.8 }}></Icon>
-                    </View>
-                    <View style={styles.content}>
-                        <FlatList
-                            data={myJourney}
-                            renderItem={renderItem}
-                            numColumns={2}
-                            contentContainerStyle={JourneyStyle.flatListContent}
-                            keyExtractor={(item) => item.id.toString()}
-                            ListEmptyComponent={<Text style={JourneyStyle.emptyList}>Không có hành trình nào</Text>}
-                        />
+                    <View style={ProfileStyle.contentIcon}>
+                        <Icon name="view-list-outline" size={28} style={{ opacity: 0.8 }}></Icon>
                     </View>
                     <SafeAreaView>{renderModel()}</SafeAreaView>
                 </View>
             )}
+            <FlatList
+                data={myJourney}
+                renderItem={renderItem}
+                numColumns={2}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={(item) => item.id.toString()}
+                ListEmptyComponent={<Text style={JourneyStyle.emptyList}>Không có hành trình nào</Text>}
+            />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
     header: {
         paddingHorizontal: 20,
         paddingTop: 20,
@@ -303,22 +322,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center"
     },
-    headerImage: {
-        width: 70,
-        height: 70
-    },
-    headerItem: {
-        alignItems: "center"
-    },
-    lableTop: {
-        fontWeight: "bold",
-        fontSize: txt20
-    },
     fullnameUser: {
         paddingLeft: 20
     },
     lableFullname: {
-        fontWeight: "600",
+        fontWeight: textWeight,
         fontSize: txt16
     },
     buttonFollow: {
@@ -326,17 +334,6 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 10,
         backgroundColor: borderUnder
-    },
-    lableButton: {
-        fontSize: 16,
-        fontWeight: "600"
-    },
-    contentIcon: {
-        paddingHorizontal: 20,
-        paddingTop: 20,
-        paddingBottom: 10,
-        borderBottomWidth: 1,
-        borderColor: borderUnder
     },
     styleModel: {
         width: "90%",

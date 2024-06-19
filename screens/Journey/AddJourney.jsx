@@ -77,50 +77,58 @@ export default function AddJourney({ navigation, route }) {
 
     const handeAddJourney = async () => {
         if (!journeyName || !dateStart || !startLocation || !endLocation) {
-            ToastMess({ type: 'error', text1: 'Vui lòng nhập đầy đủ thông tin' })
-            return
+            ToastMess({ type: 'error', text1: 'Vui lòng nhập đầy đủ thông tin' });
+            return;
+        }
+        console.log(dateStart)
+        let dateTime = moment(dateStart, 'DD-MM-YYYY').toDate();
+        let currentTime = new Date();
+
+        // Compare dateTime with currentTime
+        if (dateTime < currentTime) {
+            ToastMess({ type: 'error', text1: 'Thời gian tạo hành trình không hợp lệ.' });
+            return;
         }
 
-        let formJourney = new FormData()
-        formJourney.append('name_journey', journeyName)
-        formJourney.append('departure_time', dateStart)
-        formJourney.append('start_location', startLocation)
-        formJourney.append('background ', background)
-        formJourney.append('end_location', endLocation)
-        formJourney.append('distance', distance)
-        formJourney.append('estimated_time', estimatedTime)
+        let formJourney = new FormData();
+        formJourney.append('name_journey', journeyName);
+        formJourney.append('departure_time', dateStart);
+        formJourney.append('start_location', startLocation);
+        formJourney.append('background', background); // removed extra space after 'background'
+        formJourney.append('end_location', endLocation);
+        formJourney.append('distance', distance);
+        formJourney.append('estimated_time', estimatedTime);
 
-        setLoading(true)
+        setLoading(true);
         try {
             let token = await AsyncStorage.getItem('access-token');
-            console.log(token)
+            console.log(token);
             await authApi(token).post(endpoints['post_journey'], formJourney, {
                 headers: {
                     'accept': 'application/json',
-                    'Content-Type': 'multipart/form-data',
+                    'Content-Type': 'multipart/form-data'
                 }
-            },)
-            ToastMess({ type: 'success', text1: 'Tạo hành trình thành công' })
-            navigation.navigate("HomeScreen")
+            });
+            ToastMess({ type: 'success', text1: 'Tạo hành trình thành công' });
+            navigation.navigate("HomeScreen");
             setJourneyName('');
             setStartLocation('');
             setEndLocation('');
             setDateStart('');
             setDistance('');
-
         } catch (error) {
             if (error.response && error.response.status === 400) {
-                ToastMess({ type: 'error', text1: 'Vui lòng đăng nhập tài khoản' })
-                console.log(error)
+                ToastMess({ type: 'error', text1: 'Vui lòng đăng nhập tài khoản' });
+                console.log(error);
             } else {
                 // Lỗi khác xảy ra
-                ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' })
+                ToastMess({ type: 'error', text1: 'Có lỗi xảy ra, vui lòng thử lại' });
             }
         } finally {
             setLoading(false);
         }
-
     };
+
 
 
 
